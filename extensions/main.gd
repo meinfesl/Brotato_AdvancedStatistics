@@ -34,7 +34,7 @@ func manage_harvesting()->void:
 
 func on_item_box_take_button_pressed(item_data:ItemParentData)->void:
 	.on_item_box_take_button_pressed(item_data)
-	RunData.mod_advstats.on_loot_box_taken()
+	RunData.mod_advstats.on_loot_box_taken(item_data)
 
 
 func on_item_box_discard_button_pressed(item_data:ItemParentData)->void:

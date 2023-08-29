@@ -97,6 +97,8 @@ func build_statistics():
 	$"%Losses".text = "Losses: %d" % (games_played - games_won)
 	$"%WinRate".text = "Win Rate: %.2f%%" % calc_pct(games_won, games_played)
 	
+	build_top_items()
+	
 	for child in $"%Records".get_children():
 		$"%Records".remove_child(child)
 		child.queue_free()
@@ -148,6 +150,110 @@ func build_statistics():
 	make_row("   Level", "%d" % get_highest("LEVEL"))
 	for stat in char_stats:
 		make_row("   " + tr(stat), "%d" % get_highest(stat))
+
+func get_weapon(name):
+	var weapon:WeaponData = null
+	for it in ItemService.weapons:
+		if it.name == name:
+			if !weapon:
+				weapon = it
+			elif it.tier < weapon.tier:
+				weapon = it
+	return weapon
+
+
+func get_item(id):
+	for it in ItemService.items:
+		if it.my_id == id:
+			return it
+	return null
+
+
+func build_top_items():
+	var weapons = get_items("WEAPONS_USAGE")
+	var array = []
+	for it in weapons:
+		var weapon = get_weapon(it)
+		if weapon:
+			array.push_back([weapon, weapons[it]])
+	
+	array.sort_custom(self, "comparator")
+	
+	$"%WeaponTop1".hide()
+	$"%WeaponTop2".hide()
+	$"%WeaponTop3".hide()
+	$"%WeaponTop4".hide()
+	$"%WeaponTop5".hide()
+	
+	if array.size() == 0:
+		$"%WeaponsNA".show()
+	else:
+		$"%WeaponsNA".hide()
+		for i in 5:
+			if array.size() <= i:
+				break
+			var hbox = $"%MostUsedWeapons".get_child(1 + i)
+			hbox.show()
+			hbox.get_child(1).texture = array[i][0].icon
+			hbox.get_child(2).text = tr(array[i][0].name)
+	
+	var items = get_items("ITEMS_USAGE")
+	array.clear()
+	for it in items:
+		var item = get_item(it)
+		if item:
+			array.push_back([item, items[it]])
+	
+	array.sort_custom(self, "comparator")
+	
+	$"%ItemTop1".hide()
+	$"%ItemTop2".hide()
+	$"%ItemTop3".hide()
+	$"%ItemTop4".hide()
+	$"%ItemTop5".hide()
+	
+	if array.size() == 0:
+		$"%ItemsNA".show()
+	else:
+		$"%ItemsNA".hide()
+		for i in 5:
+			if array.size() <= i:
+				break
+			var hbox = $"%MostUsedItems".get_child(1 + i)
+			hbox.show()
+			hbox.get_child(1).texture = array[i][0].icon
+			hbox.get_child(2).text = tr(array[i][0].my_id.to_upper())
+
+
+func comparator(a, b):
+	return b[1] < a[1]
+
+
+func get_items(stat)->Dictionary:
+	var dict:Dictionary = {}
+	if character_id == "":
+		for child in inventory.get_children():
+			if !child.item:
+				continue
+			character_id = child.item.my_id
+			var items = get_items(stat)
+			for item in items:
+				if dict.has(item):
+					dict[item] += items[item]
+				else:
+					dict[item] = items[item]
+			character_id = ""
+	else:
+		for it in stats:
+			var items = it.get_value(character_id, stat, null)
+			if items:
+				for item in items:
+					if dict.has(item):
+						dict[item] += items[item]
+					else:
+						dict[item] = items[item]
+	return dict
+
 
 func make_row(name:String, value:String):
 	var row = row_proto.duplicate()

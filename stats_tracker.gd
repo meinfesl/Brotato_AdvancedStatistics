@@ -87,6 +87,7 @@ var run_stats_saved = null
 
 var mod_state:Dictionary
 
+var template_stats
 var character_stats_normal = []
 var character_stats_endless = []
 
@@ -120,7 +121,8 @@ func _ready():
 		data = CharacterStats.new()
 		data.name = "endless_d" + str(i)
 		character_stats_endless.push_back(data)
-
+		
+	template_stats = init_character_stats()
 
 func _process(_delta):
 	var time_now = Time.get_ticks_msec()
@@ -222,12 +224,18 @@ func on_weapon_damage(pos, damage):
 			waiting_for_damage_source = false
 
 
-func on_weapon_added(_weapon):
+func on_weapon_added(weapon):
 	if combining_weapons:
 		run_stats["DAMAGE_BY_WEAPON"].push_back(combining_weapons_damage)
 		combining_weapons_damage = 0
 	else:
 		run_stats["DAMAGE_BY_WEAPON"].push_back(0)
+	var dict = run_stats["WEAPONS_USAGE"]
+	
+	if dict.has(weapon.name):
+		dict[weapon.name] += 1
+	else:
+		dict[weapon.name] = 1
 
 
 func on_weapon_removed(weapon):
@@ -295,12 +303,27 @@ func on_item_box_picked_up():
 	run_stats["LOOT_BOXES"] += 1
 	wave_stats["LOOT_BOXES"] += 1
 
-func on_loot_box_taken():
+
+func on_loot_box_taken(item):
 	run_stats["LOOT_BOXES_TAKEN"] += 1
+	var dict = run_stats["ITEMS_USAGE"]
+	if dict.has(item.my_id):
+		dict[item.my_id] += 1
+	else:
+		dict[item.my_id] = 1
 
 
 func on_loot_box_discarded():
 	run_stats["LOOT_BOXES_DISCARDED"] += 1
+
+
+func on_shop_item_bought(shop_item):
+	if shop_item.item_data.get_category() == Category.ITEM:
+		var dict = run_stats["ITEMS_USAGE"]
+		if dict.has(shop_item.item_data.my_id):
+			dict[shop_item.item_data.my_id] += 1
+		else:
+			dict[shop_item.item_data.my_id] = 1
 
 
 func get_percent_text_for_item(item)->String:
@@ -387,6 +410,8 @@ func update_character_stats(stats:CharacterStats, is_run_lost:bool, is_run_won:b
 	if stats.get_value(char_id, "ITEMS_OWNED", 0) < RunData.items.size():
 		stats.update_value(char_id, "ITEMS_OWNED", RunData.items.size())
 	
+	manage_items(stats, is_run_lost || is_run_won)
+	
 	if is_run_lost || is_run_won:
 		run_in_progress = false
 		if wave_stats["BOSSES_KILLED"] == 2:
@@ -407,6 +432,25 @@ func update_character_stats(stats:CharacterStats, is_run_lost:bool, is_run_won:b
 		var path = "user://" + ProgressData.get_user_id() + "/mod_advstats/character_data"
 		stats.save(path)
 		stats.save(path)
+
+
+func manage_items(stats:CharacterStats, run_finished:bool):
+	var char_id = RunData.current_character.my_id
+	
+	if run_finished:
+		var dict:Dictionary = stats.characters[char_id]["WEAPONS_USAGE"]
+		for key in run_stats["WEAPONS_USAGE"]:
+			if dict.has(key):
+				dict[key] += run_stats["WEAPONS_USAGE"][key]
+			else:
+				dict[key] = run_stats["WEAPONS_USAGE"][key]
+		
+		dict = stats.characters[char_id]["ITEMS_USAGE"]
+		for key in run_stats["ITEMS_USAGE"]:
+			if dict.has(key):
+				dict[key] += run_stats["ITEMS_USAGE"][key]
+			else:
+				dict[key] = run_stats["ITEMS_USAGE"][key]
 
 
 func save():
@@ -441,14 +485,30 @@ func load():
 		if read_val:
 			mod_state = read_val.get("mod_state", init_mod_state())
 			run_stats_saved = read_val.get("run_stats", null)
+			if run_stats_saved:
+				var template = init_stats_container()
+				for key in template:
+					if !run_stats_saved.has(key):
+						run_stats_saved[key] = template[key]
 		file.close()
 	else:
 		mod_state = init_mod_state()
 	
 	for it in character_stats_normal:
 		it.load(mod_dir + "/character_data")
+		validate(it)
+		
 	for it in character_stats_endless:
 		it.load(mod_dir + "/character_data")
+		validate(it)
+
+
+func validate(stats:CharacterStats):
+	for character in stats.characters:
+		for key in template_stats:
+			var dict = stats.characters[character]
+			if !dict.has(key):
+				dict[key] = template_stats[key]
 
 
 func save_run_state():
@@ -510,6 +570,8 @@ func init_stats_container()->Dictionary:
 		"SHOP_ITEMS_BROWSED":0,
 		"DAMAGE_SAUSAGE":0,
 		"RUN_TIME":0,
+		"WEAPONS_USAGE":{},
+		"ITEMS_USAGE":{},
 	}
 
 
@@ -517,6 +579,9 @@ func init_character_stats()->Dictionary:
 	return {
 		"GAMES_PLAYED":0,
 		"GAMES_WON":0,
+		"TOTAL_WAVES_PLAYED":0,
+		"WEAPONS_USAGE":{},
+		"ITEMS_USAGE":{},
 	}
 
 

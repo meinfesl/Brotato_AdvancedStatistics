@@ -16,3 +16,7 @@ func on_item_combine_button_pressed(weapon_data:WeaponData, is_upgrade:bool = fa
 	RunData.mod_advstats.combining_weapons = true
 	.on_item_combine_button_pressed(weapon_data, is_upgrade)
 	RunData.mod_advstats.combining_weapons = false
+
+func on_shop_item_bought(shop_item:ShopItem)->void:
+	.on_shop_item_bought(shop_item)
+	RunData.mod_advstats.on_shop_item_bought(shop_item)
