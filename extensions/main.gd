@@ -51,5 +51,5 @@ func clean_up_room(is_last_wave:bool = false, is_run_lost:bool = false, is_run_w
 	
 
 func _on_EndWaveTimer_timeout():
-	RunData.mod_advstats.update_loot_box_count()
+	RunData.mod_advstats.on_wave_end()
 	._on_EndWaveTimer_timeout()

@@ -9,12 +9,12 @@ class CharacterStats:
 		characters[char_id][stat] = value
 	
 	
-	func inc_value(char_id:String, stat:String):
+	func add_value(char_id:String, stat:String, value):
 		var c = characters[char_id]
 		if c.has(stat):
-			c[stat] += 1
+			c[stat] += value
 		else:
-			c[stat] = 1
+			c[stat] = value
 	
 	
 	func get_value(char_id:String, stat:String, default):
@@ -109,6 +109,9 @@ var last_time = -1
 var waiting_for_damage_source = false
 var damage_source = ""
 
+var run_lost = false
+var run_won = false
+
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
@@ -139,6 +142,8 @@ func _process(_delta):
 
 func reset():
 	last_time = -1
+	run_lost = false
+	run_won = false
 	run_stats = init_stats_container()
 	wave_stats = init_wave_stats_container()
 
@@ -341,7 +346,7 @@ func get_percent_text_for_item(item)->String:
 	return " (%.2f%%)" % pct
 
 
-func update_loot_box_count():
+func on_wave_end():
 	var char_id = RunData.current_character.my_id
 	var stats
 	if RunData.is_endless_run:
@@ -351,36 +356,44 @@ func update_loot_box_count():
 	
 	if stats.get_value(char_id, "LOOT_BOXES_IN_A_SINGLE_WAVE", 0) < wave_stats["LOOT_BOXES"]:
 		stats.update_value(char_id, "LOOT_BOXES_IN_A_SINGLE_WAVE", wave_stats["LOOT_BOXES"])
+	update_character_stats(char_id, stats)
+	
+	if run_lost || run_won:
+		run_in_progress = false
+		if wave_stats["BOSSES_KILLED"] == 2:
+			stats.update_value(char_id, "D5_BOSSES_KILLED", 1)
+		stats.add_value(char_id, "GAMES_PLAYED", 1)
+		if run_won:
+			stats.add_value(char_id, "GAMES_WON", 1)
+			
+			var time = stats.get_value(char_id, "RUN_TIME", 0.0)
+			if time == 0.0 || time > run_stats["RUN_TIME"]:
+				stats.update_value(char_id, "RUN_TIME", run_stats["RUN_TIME"])
+			time = stats.get_value(char_id, "WAVE20_TIME", 0.0)
+			if time == 0.0 || time > wave_stats["TIME"]:
+				stats.update_value(char_id, "WAVE20_TIME", wave_stats["TIME"])
+		
+		#Save finished runs
+		var path = "user://" + ProgressData.get_user_id() + "/mod_advstats/character_data"
+		stats.save(path)
+		stats.save(path)
 
 
 func on_room_clean_up(is_run_lost:bool, is_run_won:bool):
 	wave_in_progress = false
+	run_lost = is_run_lost
+	run_won = is_run_won
+	
 	var stats
 	if RunData.is_endless_run:
 		stats = character_stats_endless[RunData.get_current_difficulty()]
 	else:
 		stats = character_stats_normal[RunData.get_current_difficulty()]
 	
-	update_character_stats(stats, is_run_lost, is_run_won)
+	update_stats(stats)
 
 
-func update_character_stats(stats:CharacterStats, is_run_lost:bool, is_run_won:bool):
-	var char_id = RunData.current_character.my_id
-	
-	if !stats.characters.has(char_id):
-		stats.characters[char_id] = init_character_stats()
-	
-	if stats.get_value(char_id, "MAX_DAMAGE", 0) < run_stats["MAX_DAMAGE"]:
-		stats.update_value(char_id, "MAX_DAMAGE", run_stats["MAX_DAMAGE"])
-		stats.update_value(char_id, "MAX_DAMAGE_SOURCE", run_stats["MAX_DAMAGE_SOURCE"])
-	
-	var stats_to_cmp = ["DAMAGE_DONE", "DAMAGE_DONE_OVERKILL", "HP_HEALED",
-		"MATERIALS_GAINED", "KILLS_ENEMIES", "LOOT_BOXES"]
-	
-	for stat in stats_to_cmp:
-		if stats.get_value(char_id, stat, 0) < run_stats[stat]:
-			stats.update_value(char_id, stat, run_stats[stat])
-	
+func update_character_stats(char_id, stats:CharacterStats):
 	var char_stats = [
 		"stat_max_hp",
 		"stat_hp_regeneration",
@@ -406,38 +419,34 @@ func update_character_stats(stats:CharacterStats, is_run_lost:bool, is_run_won:b
 	
 	if stats.get_value(char_id, "LEVEL", 0) < RunData.current_level:
 		stats.update_value(char_id, "LEVEL", RunData.current_level)
-	
-	if stats.get_value(char_id, "ITEMS_OWNED", 0) < RunData.items.size():
-		stats.update_value(char_id, "ITEMS_OWNED", RunData.items.size())
-	
-	manage_items(stats, is_run_lost || is_run_won)
-	
-	if is_run_lost || is_run_won:
-		run_in_progress = false
-		if wave_stats["BOSSES_KILLED"] == 2:
-			stats.update_value(char_id, "D5_BOSSES_KILLED", 1)
-		stats.inc_value(char_id, "GAMES_PLAYED")
-		if is_run_won:
-			stats.inc_value(char_id, "GAMES_WON")
-		
-		if is_run_won:
-			var time = stats.get_value(char_id, "RUN_TIME", 0.0)
-			if time == 0.0 || time > run_stats["RUN_TIME"]:
-				stats.update_value(char_id, "RUN_TIME", run_stats["RUN_TIME"])
-			time = stats.get_value(char_id, "WAVE20_TIME", 0.0)
-			if time == 0.0 || time > wave_stats["TIME"]:
-				stats.update_value(char_id, "WAVE20_TIME", wave_stats["TIME"])
-		
-		#Save finished runs
-		var path = "user://" + ProgressData.get_user_id() + "/mod_advstats/character_data"
-		stats.save(path)
-		stats.save(path)
 
 
-func manage_items(stats:CharacterStats, run_finished:bool):
+func update_stats(stats:CharacterStats):
 	var char_id = RunData.current_character.my_id
 	
-	if run_finished:
+	if !stats.characters.has(char_id):
+		stats.characters[char_id] = init_character_stats()
+	
+	update_character_stats(char_id, stats)
+	
+	if run_lost || run_won:
+		if stats.get_value(char_id, "MAX_DAMAGE", 0) < run_stats["MAX_DAMAGE"]:
+			stats.update_value(char_id, "MAX_DAMAGE", run_stats["MAX_DAMAGE"])
+			stats.update_value(char_id, "MAX_DAMAGE_SOURCE", run_stats["MAX_DAMAGE_SOURCE"])
+		
+		if stats.get_value(char_id, "ITEMS_OWNED", 0) < RunData.items.size() -1:
+			stats.update_value(char_id, "ITEMS_OWNED", RunData.items.size() - 1)
+		
+		stats.add_value(char_id, "OVERALL_ITEMS_OWNED", RunData.items.size() - 1)
+		
+		var stats_to_cmp = ["DAMAGE_DONE", "DAMAGE_DONE_OVERKILL", "HP_HEALED",
+			"MATERIALS_GAINED", "KILLS_ENEMIES", "LOOT_BOXES"]
+		
+		for stat in stats_to_cmp:
+			if stats.get_value(char_id, stat, 0) < run_stats[stat]:
+				stats.update_value(char_id, stat, run_stats[stat])
+			stats.add_value(char_id, "OVERALL_" + stat, run_stats[stat])
+		
 		var dict:Dictionary = stats.characters[char_id]["WEAPONS_USAGE"]
 		for key in run_stats["WEAPONS_USAGE"]:
 			if dict.has(key):
@@ -501,6 +510,9 @@ func load():
 	for it in character_stats_endless:
 		it.load(mod_dir + "/character_data")
 		validate(it)
+	
+	#character_stats_normal[5].characters["character_ranger"]["GAMES_PLAYED"] = 2
+	#character_stats_normal[5].save(mod_dir + "/character_data")
 
 
 func validate(stats:CharacterStats):

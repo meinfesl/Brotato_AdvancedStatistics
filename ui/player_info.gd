@@ -109,22 +109,32 @@ func build_statistics():
 	make_row("Fastest D5 Bosses", d5_bosses)
 	make_row("", "")
 	make_row("Highest Run Stats:", "")
-	make_row("   Damge Done", "%d" % get_highest("DAMAGE_DONE"))
-	make_row("   Damge Done With Overkill", "%d" % get_highest("DAMAGE_DONE_OVERKILL"))
+	make_row("   Damge Done", format_number(get_highest("DAMAGE_DONE")))
+	make_row("   Damge Done With Overkill", format_number(get_highest("DAMAGE_DONE_OVERKILL")))
 	
 	var max_dmg = get_max_damage()
 	var dmg_source = get_damage_source(max_dmg[1])
 	
-	make_row("   Highest Hit", "%d" % max_dmg[0])
+	make_row("   Highest Hit", format_number(max_dmg[0]))
 	if dmg_source:
 		last_row.init_popup(null, $ItemPopup, dmg_source)
 	
-	make_row("   HP Helaed", "%d" % get_highest("HP_HEALED"))
-	make_row("   Materials Gained", "%d" % get_highest("MATERIALS_GAINED"))
-	make_row("   Enemies Killed", "%d" % get_highest("KILLS_ENEMIES"))
-	make_row("   Items Owned", "%d" % get_highest("ITEMS_OWNED"))
-	make_row("   Loot Boxes", "%d" % get_highest("LOOT_BOXES"))
-	make_row("   Loot Boxes In One Wave", "%d" % get_highest("LOOT_BOXES_IN_A_SINGLE_WAVE"))
+	make_row("   HP Helaed", format_number(get_highest("HP_HEALED")))
+	make_row("   Materials Gained", format_number(get_highest("MATERIALS_GAINED")))
+	make_row("   Enemies Killed", format_number(get_highest("KILLS_ENEMIES")))
+	make_row("   Items Owned", format_number(get_highest("ITEMS_OWNED")))
+	make_row("   Loot Boxes", format_number(get_highest("LOOT_BOXES")))
+	make_row("   Loot Boxes In One Wave", format_number(get_highest("LOOT_BOXES_IN_A_SINGLE_WAVE")))
+	
+	make_row("", "")
+	make_row("Overall Run Stats", "")
+	make_row("   Damge Done", format_number(get_total("OVERALL_DAMAGE_DONE")))
+	make_row("   Damge Done With Overkill", format_number(get_total("OVERALL_DAMAGE_DONE_OVERKILL")))
+	make_row("   HP Helaed", format_number(get_total("OVERALL_HP_HEALED")))
+	make_row("   Materials Gained", format_number(get_total("OVERALL_MATERIALS_GAINED")))
+	make_row("   Enemies Killed", format_number(get_total("OVERALL_KILLS_ENEMIES")))
+	make_row("   Items Owned", format_number(get_total("OVERALL_ITEMS_OWNED")))
+	make_row("   Loot Boxes", format_number(get_total("OVERALL_LOOT_BOXES")))
 	
 	var char_stats = [
 		"STAT_MAX_HP",
@@ -253,6 +263,18 @@ func get_items(stat)->Dictionary:
 					else:
 						dict[item] = items[item]
 	return dict
+
+
+func format_number(num):
+	var s = ""
+	var integer = int(num / 1000)
+	var remider = int(num % 1000)
+	while integer > 0:
+		s = " %03d%s" % [remider, s]
+		remider = int(integer % 1000)
+		integer = int(integer / 1000)
+	s = "%d%s" % [remider, s]
+	return s
 
 
 func make_row(name:String, value:String):
