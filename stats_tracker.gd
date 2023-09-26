@@ -144,8 +144,8 @@ func reset():
 	last_time = -1
 	run_lost = false
 	run_won = false
-	run_stats = init_stats_container()
-	wave_stats = init_wave_stats_container()
+	run_stats = init_run_stats()
+	wave_stats = init_wave_stats()
 
 
 func on_wave_started():
@@ -153,7 +153,7 @@ func on_wave_started():
 		last_time = Time.get_ticks_msec()
 	run_in_progress = true
 	wave_in_progress = true
-	wave_stats = init_wave_stats_container()
+	wave_stats = init_wave_stats()
 
 
 func on_game_paused():
@@ -211,7 +211,11 @@ func on_player_damage_taken(player, base_damage, damage_taken:Array, hitbox):
 			run_stats["HITS_TAKEN"] += 1
 			var after_armor = player.get_dmg_value(base_damage)
 			if after_armor == damage_taken[1]:
-				run_stats["DAMAGE_TAKEN_ARMOR"] += base_damage - damage_taken[1]
+				var dmg = base_damage - damage_taken[1]
+				if dmg > 0:
+					run_stats["DAMAGE_TAKEN_ARMOR"] += dmg
+				else:
+					run_stats["DAMAGE_TAKEN_ARMOR_NEGATIVE"] += int(abs(dmg))
 		else:
 			run_stats["DAMAGE_TAKEN_SELF"] += damage_taken[1]
 
@@ -495,7 +499,7 @@ func load():
 			mod_state = read_val.get("mod_state", init_mod_state())
 			run_stats_saved = read_val.get("run_stats", null)
 			if run_stats_saved:
-				var template = init_stats_container()
+				var template = init_run_stats()
 				for key in template:
 					if !run_stats_saved.has(key):
 						run_stats_saved[key] = template[key]
@@ -510,9 +514,6 @@ func load():
 	for it in character_stats_endless:
 		it.load(mod_dir + "/character_data")
 		validate(it)
-	
-	#character_stats_normal[5].characters["character_ranger"]["GAMES_PLAYED"] = 2
-	#character_stats_normal[5].save(mod_dir + "/character_data")
 
 
 func validate(stats:CharacterStats):
@@ -536,7 +537,7 @@ func resum_from_state():
 		run_stats = run_stats_saved
 
 
-func init_wave_stats_container()->Dictionary:
+func init_wave_stats()->Dictionary:
 	return {
 		"TIME":0,
 		"LOOT_BOXES":0,
@@ -544,7 +545,7 @@ func init_wave_stats_container()->Dictionary:
 	}
 
 
-func init_stats_container()->Dictionary:
+func init_run_stats()->Dictionary:
 	return {
 		"DAMAGE_DONE":0,
 		"DAMAGE_DONE_OVERKILL":0,
@@ -560,6 +561,7 @@ func init_stats_container()->Dictionary:
 		"DAMAGE_TAKEN":0,
 		"DAMAGE_TAKEN_SELF":0,
 		"DAMAGE_TAKEN_ARMOR":0,
+		"DAMAGE_TAKEN_ARMOR_NEGATIVE":0,
 		"HITS_TAKEN":0,
 		"HITS_DODGED":0,
 		"HP_HEALED":0,

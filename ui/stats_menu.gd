@@ -194,6 +194,8 @@ func build_survivability_stats():
 		add_row("      Self-inflicted", make_pct(damage_taken_self, damage_taken), other_color)
 	
 	add_row("   Damage Reduced By Armor", "%d" % stats["DAMAGE_TAKEN_ARMOR"])
+	if stats["DAMAGE_TAKEN_ARMOR_NEGATIVE"]:
+		add_row("   Damage Increased By Armor", "%d" % stats["DAMAGE_TAKEN_ARMOR_NEGATIVE"])
 	add_row("   Hits Taken", "%d" % stats["HITS_TAKEN"])
 	add_row("   Hits Dodged", "%d" % stats["HITS_DODGED"])
 	
