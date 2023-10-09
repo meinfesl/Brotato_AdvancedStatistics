@@ -4,6 +4,9 @@ onready var inventory = $MarginContainer/VBoxContainer/Characters/MarginContaine
 onready var row_proto = load("res://mods-unpacked/meinfesl-AdvancedStatistics/ui/stats_row.tscn").instance()
 onready var mod_state = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker").mod_state
 
+onready var tier_filter = $"%TierFilter"
+onready var button_close = $"%ButtonClose"
+
 var stats = []
 var character_id
 var changed = false
@@ -15,6 +18,13 @@ func _ready():
 	
 	var _error = $"%ButtonD5".connect("pressed", self, "filter_button_pressed")
 	_error = $"%ButtonNoEndless".connect("pressed", self, "filter_button_pressed")
+	_error = $"%MostUsedWeapons"/Button.connect("pressed", self, "show_most_used_weapons")
+	_error = $"%MostUsedItems"/Button.connect("pressed", self, "show_most_used_items")
+	_error = button_close.connect("pressed", self, "close_panel")
+	_error = tier_filter.connect("item_selected", self, "item_filter_changed")
+	tier_filter.focus_neighbour_top = tier_filter.get_path()
+	tier_filter.focus_neighbour_left = tier_filter.get_path()
+	tier_filter.focus_neighbour_right = tier_filter.get_path()
 
 
 func init():
@@ -61,6 +71,11 @@ func _input(event:InputEvent):
 	if event is InputEventMouseButton:
 		if event.button_mask & BUTTON_MASK_LEFT:
 			mouse = true
+	
+	if event.is_action_pressed("ui_cancel"):
+		if $MarginContainer/PanelContainer.visible:
+			close_panel()
+			accept_event()
 
 
 func element_pressed(_element):
@@ -236,6 +251,8 @@ func build_top_items():
 
 
 func comparator(a, b):
+	if b[1] == a[1]:
+		return a[0].name < b[0].name
 	return b[1] < a[1]
 
 
@@ -403,3 +420,123 @@ func make_time(time_in_ms):
 	var seconds:float = fmod(time_in_ms, 60 * 1000) / 1000
 	var minutes:int   =  int(time_in_ms / (60 * 1000))
 	return "%02d:%05.2f" % [minutes, seconds]
+
+
+func show_most_used_weapons():
+	$MarginContainer/PanelContainer/VBoxContainer/Label.text = "Most Used Weapons"
+	$"%TierFilter".hide()
+	var most_used = $MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer
+	for child in most_used.get_children():
+		most_used.remove_child(child)
+		child.queue_free()
+	
+	$MarginContainer/ColorRect.show()
+	$MarginContainer/PanelContainer.show()
+	
+	var weapons = get_items("WEAPONS_USAGE")
+	var array = []
+	for it in weapons:
+		var weapon = get_weapon(it)
+		if weapon:
+			array.push_back([weapon, weapons[it]])
+	
+	array.sort_custom(self, "comparator")
+	call_deferred("fill_most_used", array)
+
+
+func show_most_used_items():
+	$MarginContainer/PanelContainer/VBoxContainer/Label.text = "Most Used Items"
+	$"%TierFilter".show()
+	var most_used = $MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer
+	for child in most_used.get_children():
+		most_used.remove_child(child)
+		child.queue_free()
+	
+	$MarginContainer/ColorRect.show()
+	$MarginContainer/PanelContainer.show()
+	
+	var id = $"%TierFilter".selected
+	
+	var items = get_items("ITEMS_USAGE")
+	var array = []
+	for it in items:
+		var item = get_item(it)
+		if item:
+			if id:
+				if item.tier != id - 1:
+					continue
+			array.push_back([item, items[it]])
+	
+	array.sort_custom(self, "comparator")
+	call_deferred("fill_most_used", array)
+
+
+func fill_most_used(array):
+	var most_used = $MarginContainer/PanelContainer/VBoxContainer/ScrollContainer/VBoxContainer
+	var proto = load("res://mods-unpacked/meinfesl-AdvancedStatistics/ui/item_row.tscn").instance()
+	var i = 1
+	for it in array:
+		var row = proto.duplicate()
+		row.focus_mode = FOCUS_ALL
+		row.get_node("MarginContainer/HBoxContainer").get_child(0).text = str(i)
+		row.get_node("MarginContainer/HBoxContainer").get_child(1).texture = it[0].icon
+		row.get_node("MarginContainer/HBoxContainer").get_child(2).text = tr(it[0].name)
+		most_used.add_child(row)
+		i += 1
+	
+	for n in most_used.get_child_count():
+		var hbox = most_used.get_child(n).get_node("MarginContainer/HBoxContainer")
+		var prev
+		var next
+		if n == 0: # first
+			if tier_filter.visible:
+				prev = tier_filter
+			else:
+				prev = hbox
+		else:
+			prev = most_used.get_child(n - 1).get_node("MarginContainer/HBoxContainer")
+		if n == most_used.get_child_count() - 1: #last
+			next = button_close
+		else:
+			next = most_used.get_child(n + 1).get_node("MarginContainer/HBoxContainer")
+		
+		hbox.focus_neighbour_top = prev.get_path()
+		hbox.focus_neighbour_bottom = next.get_path()
+		if tier_filter.visible:
+			hbox.focus_neighbour_left = tier_filter.get_path()
+		else:
+			hbox.focus_neighbour_left = hbox.get_path()
+		hbox.focus_neighbour_right = button_close.get_path()
+	
+	if most_used.get_child_count() > 0:
+		button_close.focus_neighbour_top = most_used.get_child(most_used.get_child_count() - 1).get_node("MarginContainer/HBoxContainer").get_path()
+		if tier_filter.visible:
+			tier_filter.focus_neighbour_bottom = most_used.get_child(0).get_node("MarginContainer/HBoxContainer").get_path()
+	else:
+		if tier_filter.visible:
+			tier_filter.focus_neighbour_bottom = button_close.get_path()
+			button_close.focus_neighbour_top = tier_filter.get_path()
+		else:
+			button_close.focus_neighbour_top = button_close.get_path()
+	
+	button_close.focus_neighbour_bottom = button_close.get_path()
+	button_close.focus_neighbour_left = button_close.get_path()
+	button_close.focus_neighbour_right = button_close.get_path()
+	
+	if most_used.get_child_count() > 1:
+		most_used.get_child(0).get_node("MarginContainer/HBoxContainer").grab_focus()
+	else:
+		button_close.grab_focus()
+
+
+func item_filter_changed(_index):
+	show_most_used_items()
+
+
+func close_panel():
+	$MarginContainer/ColorRect.hide()
+	$MarginContainer/PanelContainer.hide()
+	if $MarginContainer/PanelContainer/VBoxContainer/Label.text == "Most Used Weapons":
+		$"%MostUsedWeapons"/Button.grab_focus()
+	else:
+		$"%MostUsedItems"/Button.grab_focus()
