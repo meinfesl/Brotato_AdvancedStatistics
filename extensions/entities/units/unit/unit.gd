@@ -14,9 +14,11 @@ func _on_BurningTimer_timeout()->void:
 	
 	var hp = current_stats.health
 	
+	RunData.mod_advstats.burn = true
 	RunData.mod_advstats.sausage = sausage
 	._on_BurningTimer_timeout()
 	RunData.mod_advstats.sausage = false
+	RunData.mod_advstats.burn = false
 	
 	if sausage:
 		RunData.mod_advstats.run_stats["DAMAGE_SAUSAGE"] += (hp - current_stats.health)

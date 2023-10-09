@@ -98,9 +98,11 @@ var levelup:bool = false
 
 var combining_weapons = false
 var combining_weapons_damage = 0
+var combining_weapons_damage_burn = 0
 
 var exploding_weapon = null
 
+var burn = false
 var sausage = false
 var run_in_progress = false
 var wave_in_progress = false
@@ -228,6 +230,8 @@ func on_weapon_damage(pos, damage):
 	# Can happen on cleanup
 	if pos < run_stats["DAMAGE_BY_WEAPON"].size():
 		run_stats["DAMAGE_BY_WEAPON"][pos] += damage
+		if burn:
+			run_stats["DAMAGE_BY_WEAPON_BURN"][pos] += damage
 		if waiting_for_damage_source:
 			run_stats["MAX_DAMAGE_SOURCE"] = RunData.weapons[pos].my_id
 			waiting_for_damage_source = false
@@ -236,9 +240,13 @@ func on_weapon_damage(pos, damage):
 func on_weapon_added(weapon):
 	if combining_weapons:
 		run_stats["DAMAGE_BY_WEAPON"].push_back(combining_weapons_damage)
+		run_stats["DAMAGE_BY_WEAPON_BURN"].push_back(combining_weapons_damage_burn)
 		combining_weapons_damage = 0
+		combining_weapons_damage_burn = 0
 	else:
 		run_stats["DAMAGE_BY_WEAPON"].push_back(0)
+		run_stats["DAMAGE_BY_WEAPON_BURN"].push_back(0)
+	
 	var dict = run_stats["WEAPONS_USAGE"]
 	
 	if dict.has(weapon.name):
@@ -253,7 +261,9 @@ func on_weapon_removed(weapon):
 		if current_weapon.my_id == weapon.my_id:
 			if combining_weapons:
 				combining_weapons_damage += run_stats["DAMAGE_BY_WEAPON"][i]
+				combining_weapons_damage_burn += run_stats["DAMAGE_BY_WEAPON_BURN"][i]
 			run_stats["DAMAGE_BY_WEAPON"].remove(i)
+			run_stats["DAMAGE_BY_WEAPON_BURN"].remove(i)
 			break
 
 
@@ -551,6 +561,7 @@ func init_run_stats()->Dictionary:
 		"DAMAGE_DONE_OVERKILL":0,
 		"DAMAGE_DONE_WEAPONS":0,
 		"DAMAGE_BY_WEAPON":[],
+		"DAMAGE_BY_WEAPON_BURN":[],
 		"MAX_DAMAGE":0,
 		"MAX_DAMAGE_SOURCE":"",
 		"KILLS_ENEMIES":0,

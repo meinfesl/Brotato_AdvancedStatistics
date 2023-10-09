@@ -102,6 +102,11 @@ func build_damage_stats():
 		var tier_number = ItemService.get_tier_number(weapon.tier)
 		var weapon_name = tr(weapon.name) + (" " + tier_number if tier_number != "" else "")
 		add_row_weapon("         %s" % weapon_name, make_pct(damage, damage_done), i)
+		var burn = stats["DAMAGE_BY_WEAPON_BURN"][i]
+		if burn:
+			var direct = damage - burn
+			add_row_weapon("            Direct", make_pct(direct, damage_done), i, other_color)
+			add_row_weapon("            Burn", make_pct(burn, damage_done), i, other_color)
 		previous_weapons -= damage
 	
 	if previous_weapons:
