@@ -24,7 +24,7 @@ func build_statistic_impl():
 		vbox.remove_child(child)
 		child.queue_free()
 	
-	RunData.tracked_item_effects["item_scared_sausage"] = RunData.mod_advstats.run_stats["DAMAGE_SAUSAGE"]
+	RunData.tracked_item_effects[0]["item_scared_sausage"] = RunData.mod_advstats.run_stats["DAMAGE_SAUSAGE"]
 	build_damage_stats()
 	build_survivability_stats()
 	build_enemies_stats()
@@ -83,11 +83,11 @@ func build_damage_stats():
 	
 	add_row("   Damage Done", "%d" % damage_done)
 	
-	var character_passive = RunData.tracked_item_effects.get(RunData.current_character.my_id, 0)
+	var character_passive = RunData.tracked_item_effects[0].get(RunData.get_player_character(0).my_id, 0)
 	if character_passive:
 		var character = null
 		for it in items_container.get_children():
-			if it.item.my_id == RunData.current_character.my_id:
+			if it.item.my_id == RunData.get_player_character(0).my_id:
 				character = it
 				break
 		add_row("      Character Passive:", make_pct(character_passive, damage_done), other_color, character)
@@ -96,8 +96,9 @@ func build_damage_stats():
 	
 	var previous_weapons = weapon_damage
 	
-	for i in RunData.weapons.size():
-		var weapon = RunData.weapons[i]
+	var weapons = RunData.get_player_weapons(0)
+	for i in weapons.size():
+		var weapon = weapons[i]
 		var damage = stats["DAMAGE_BY_WEAPON"][i]
 		var tier_number = ItemService.get_tier_number(weapon.tier)
 		var weapon_name = tr(weapon.name) + (" " + tier_number if tier_number != "" else "")
@@ -123,13 +124,9 @@ func build_damage_stats():
 		"item_spicy_sauce":0,
 	}
 	
-	# It's the same damage and tracking
-	if RunData.current_character.my_id == "character_lucky":
-		tracked_items.erase("item_baby_elephant")
-	
 	var items = 0
 	for key in tracked_items:
-		var dmg = RunData.tracked_item_effects.get(key, 0)
+		var dmg = RunData.tracked_item_effects[0].get(key, 0)
 		tracked_items[key] = dmg
 		items += dmg
 	
@@ -152,7 +149,7 @@ func build_damage_stats():
 	
 	var structures = 0
 	for key in tracked_structures:
-		var dmg = RunData.tracked_item_effects.get(key, 0)
+		var dmg = RunData.tracked_item_effects[0].get(key, 0)
 		tracked_structures[key] = dmg
 		structures += dmg
 	
@@ -218,7 +215,7 @@ func build_survivability_stats():
 	
 	var items = 0
 	for key in tracked_items:
-		var heal = RunData.tracked_item_effects.get(key, 0)
+		var heal = RunData.tracked_item_effects[0].get(key, 0)
 		tracked_items[key] = heal
 		items += heal
 	
@@ -252,15 +249,15 @@ func build_econ_stats():
 	
 	var mat_all = stats["MATERIALS_GAINED"]
 	var mat_picked_up = stats["MATERIALS_GAINED_PICKED_UP"]
-	var mat_metal_detector = RunData.tracked_item_effects.get("item_metal_detector", 0)
+	var mat_metal_detector = RunData.tracked_item_effects[0].get("item_metal_detector", 0)
 	var mat_harvesting = stats["MATERIALS_GAINED_HARVESTING"]
 	var mat_recycling = stats["MATERIALS_GAINED_RECYCLING"]
-	var mat_recycling_machine = RunData.tracked_item_effects.get("item_recycling_machine", 0)
+	var mat_recycling_machine = RunData.tracked_item_effects[0].get("item_recycling_machine", 0)
 	var mat_crit = stats["MATERIALS_GAINED_WEAPON_CRIT"]
 	
 	var items = 0
 	for key in tracked_items:
-		var materials = RunData.tracked_item_effects.get(key, 0)
+		var materials = RunData.tracked_item_effects[0].get(key, 0)
 		tracked_items[key] = materials
 		items += materials
 	
@@ -352,7 +349,7 @@ func make_item_name(padding:int, id:String)->String:
 	for i in padding:
 		string += "   "
 	string += tr(id.to_upper())
-	var nb = RunData.get_nb_item(id)
+	var nb = RunData.get_nb_item(id, 0)
 	if nb > 1:
 		string += " (x%d)" % nb
 	return string

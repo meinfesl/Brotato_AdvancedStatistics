@@ -44,10 +44,9 @@ func show_popup():
 		return
 	
 	if inventory_popup:
-		inventory_popup.display_element(popup_content)
-		inventory_popup._new_element = null
+		inventory_popup.display_item_data(popup_content.item, self, true)
 	elif standalone_popup:
-		standalone_popup.set_data(popup_content)
+		standalone_popup.set_data(popup_content, 0)
 		standalone_popup.show()
 	
 	handle_popup = true
@@ -55,16 +54,14 @@ func show_popup():
 
 func hide_popup():
 	if inventory_popup:
-		inventory_popup.hide_element()
+		inventory_popup.hide()
 	if standalone_popup:
 		standalone_popup.hide()
 
 
 func _process(_delta:float)->void:
 	if handle_popup:
-		if inventory_popup:
-			inventory_popup.rect_global_position = get_pos()
-		elif standalone_popup:
+		if standalone_popup:
 			standalone_popup.rect_global_position = get_pos()
 		handle_popup = false
 

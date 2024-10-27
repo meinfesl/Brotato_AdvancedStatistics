@@ -3,10 +3,10 @@ extends "res://ui/menus/run/end_run.gd"
 var mod_advstats_button
 var mod_advstats_menu
 
-onready var mod_advstats_end_screen = $MarginContainer / VBoxContainer / HBoxContainer2 / VBoxContainer / PanelContainer / HBoxContainer / MarginContainer2 / VBoxContainer
+onready var mod_advstats_end_screen = $MarginContainer / VBoxContainer /  PanelContainer / HBoxContainer / MarginContainer2 / VBoxContainer
 
 func _ready():
-	var stats_label = $MarginContainer / VBoxContainer / HBoxContainer2 / VBoxContainer / PanelContainer / HBoxContainer / StatsContainer / MarginContainer / VBoxContainer2 / StatsLabel
+	var stats_label = $"%StatsContainer"/MarginContainer/VBoxContainer2/StatsLabel
 	var button = load("res://mods-unpacked/meinfesl-AdvancedStatistics/ui/stats_button.tscn").instance()
 	mod_advstats_button = button
 	var hbox = HBoxContainer.new()
@@ -26,11 +26,11 @@ func _ready():
 	
 	mod_advstats_menu = load("res://mods-unpacked/meinfesl-AdvancedStatistics/ui/stats_menu.tscn").instance()
 	
-	var panel_con = $MarginContainer/VBoxContainer/HBoxContainer2/VBoxContainer/PanelContainer/HBoxContainer/MarginContainer2
+	var panel_con = $MarginContainer/VBoxContainer/PanelContainer/HBoxContainer/MarginContainer2
 	panel_con.add_child(mod_advstats_menu)
 	
-	mod_advstats_menu.weapons_container = $MarginContainer/VBoxContainer/HBoxContainer2/VBoxContainer/PanelContainer/HBoxContainer/MarginContainer2/VBoxContainer/HBoxContainer/WeaponsContainer/ScrollContainer/MarginContainer/Elements
-	mod_advstats_menu.items_container = $MarginContainer/VBoxContainer/HBoxContainer2/VBoxContainer/PanelContainer/HBoxContainer/MarginContainer2/VBoxContainer/ItemsContainer/ScrollContainer/MarginContainer/Elements
+	mod_advstats_menu.weapons_container = $"%WeaponsContainer"/ScrollSizeContainer/ScrollContainer/Elements
+	mod_advstats_menu.items_container = $"%ItemsContainer"/ScrollSizeContainer/ScrollContainer/Elements
 	mod_advstats_menu.inventory_popup = $ItemPopup
 	mod_advstats_menu.standalone_popup = standalone_popup
 	

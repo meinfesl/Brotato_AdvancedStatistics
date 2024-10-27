@@ -179,9 +179,10 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	if run_stats["MAX_DAMAGE"] < damage[0]:
 		run_stats["MAX_DAMAGE"] = damage[0]
 		
+		var weapons = RunData.get_player_weapons(0)
 		if hitbox && hitbox.from:
-			if is_instance_valid(hitbox.from) && hitbox.from.weapon_pos < RunData.weapons.size():
-				run_stats["MAX_DAMAGE_SOURCE"] = RunData.weapons[hitbox.from.weapon_pos].my_id
+			if is_instance_valid(hitbox.from) && "weapon_pos" in hitbox.from && hitbox.from.weapon_pos < weapons.size():
+				run_stats["MAX_DAMAGE_SOURCE"] = weapons[hitbox.from.weapon_pos].my_id
 		elif hitbox && hitbox.damage_tracking_key != "":
 			run_stats["MAX_DAMAGE_SOURCE"] = hitbox.damage_tracking_key
 		elif damage_source != "":
@@ -192,15 +193,15 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 			waiting_for_damage_source = true
 			run_stats["MAX_DAMAGE_SOURCE"] = ""
 		
-		if RunData.current_character:
-			if RunData.current_character.my_id == "character_lucky":
+		if RunData.get_player_character(0):
+			if RunData.get_player_character(0).my_id == "character_lucky":
 				if run_stats["MAX_DAMAGE_SOURCE"] == "item_baby_elephant":
 					run_stats["MAX_DAMAGE_SOURCE"] = "character_lucky"
 	
 	damage_source = ""
 
 
-func on_player_damage_taken(player, base_damage, damage_taken:Array, hitbox):
+func on_player_damage_taken(player, base_damage, damage_taken:Array, args):
 	# Damage into i-frame, wounderfull isn't it?
 	if damage_taken.size() != 3:
 		return
@@ -209,10 +210,10 @@ func on_player_damage_taken(player, base_damage, damage_taken:Array, hitbox):
 		run_stats["HITS_DODGED"] += 1
 	else:
 		run_stats["DAMAGE_TAKEN"] += damage_taken[1]
-		if hitbox:
+		if args.hitbox:
 			run_stats["HITS_TAKEN"] += 1
-			var after_armor = player.get_dmg_value(base_damage)
-			if after_armor == damage_taken[1]:
+			var result = player.get_damage_value(base_damage, args.from_player_index, args.armor_applied, args.dodgeable, false, args.hitbox, args.is_burning)
+			if result.value == damage_taken[1]:
 				var dmg = base_damage - damage_taken[1]
 				if dmg > 0:
 					run_stats["DAMAGE_TAKEN_ARMOR"] += dmg
@@ -256,8 +257,9 @@ func on_weapon_added(weapon):
 
 
 func on_weapon_removed(weapon):
-	for i in RunData.weapons.size():
-		var current_weapon = RunData.weapons[i]
+	var weapons = RunData.get_player_weapons(0)
+	for i in weapons.size():
+		var current_weapon = weapons[i]
 		if current_weapon.my_id == weapon.my_id:
 			if combining_weapons:
 				combining_weapons_damage += run_stats["DAMAGE_BY_WEAPON"][i]
@@ -349,11 +351,11 @@ func get_percent_text_for_item(item)->String:
 	if !tracked_items.has(item.my_id):
 		return ""
 		
-	if !RunData.tracked_item_effects.has(item.my_id):
+	if !RunData.tracked_item_effects[0].has(item.my_id):
 		return ""
 		
 	var total = run_stats[tracked_items[item.my_id]]
-	var value = RunData.tracked_item_effects[item.my_id]
+	var value = RunData.tracked_item_effects[0][item.my_id]
 	var pct = 0.0
 	if total:
 		pct = value * 100.0 / total
@@ -361,12 +363,12 @@ func get_percent_text_for_item(item)->String:
 
 
 func on_wave_end():
-	var char_id = RunData.current_character.my_id
+	var char_id = RunData.get_player_character(0).my_id
 	var stats
 	if RunData.is_endless_run:
-		stats = character_stats_endless[RunData.get_current_difficulty()]
+		stats = character_stats_endless[RunData.current_difficulty]
 	else:
-		stats = character_stats_normal[RunData.get_current_difficulty()]
+		stats = character_stats_normal[RunData.current_difficulty]
 	
 	if stats.get_value(char_id, "LOOT_BOXES_IN_A_SINGLE_WAVE", 0) < wave_stats["LOOT_BOXES"]:
 		stats.update_value(char_id, "LOOT_BOXES_IN_A_SINGLE_WAVE", wave_stats["LOOT_BOXES"])
@@ -388,7 +390,7 @@ func on_wave_end():
 				stats.update_value(char_id, "WAVE20_TIME", wave_stats["TIME"])
 		
 		#Save finished runs
-		var path = "user://" + ProgressData.get_user_id() + "/mod_advstats/character_data"
+		var path = "user://" + Platform.get_user_id() + "/mod_advstats/character_data"
 		stats.save(path)
 		stats.save(path)
 
@@ -400,9 +402,9 @@ func on_room_clean_up(is_run_lost:bool, is_run_won:bool):
 	
 	var stats
 	if RunData.is_endless_run:
-		stats = character_stats_endless[RunData.get_current_difficulty()]
+		stats = character_stats_endless[RunData.current_difficulty]
 	else:
-		stats = character_stats_normal[RunData.get_current_difficulty()]
+		stats = character_stats_normal[RunData.current_difficulty]
 	
 	update_stats(stats)
 
@@ -428,15 +430,15 @@ func update_character_stats(char_id, stats:CharacterStats):
 	]
 	
 	for stat in char_stats:
-		if stats.get_value(char_id, stat.to_upper(), 0) < Utils.get_stat(stat):
-			stats.update_value(char_id, stat.to_upper(), Utils.get_stat(stat))
+		if stats.get_value(char_id, stat.to_upper(), 0) < Utils.get_stat(stat, 0):
+			stats.update_value(char_id, stat.to_upper(), Utils.get_stat(stat, 0))
 	
-	if stats.get_value(char_id, "LEVEL", 0) < RunData.current_level:
-		stats.update_value(char_id, "LEVEL", RunData.current_level)
+	if stats.get_value(char_id, "LEVEL", 0) < RunData.get_player_level(0):
+		stats.update_value(char_id, "LEVEL", RunData.get_player_level(0))
 
 
 func update_stats(stats:CharacterStats):
-	var char_id = RunData.current_character.my_id
+	var char_id = RunData.get_player_character(0).my_id
 	
 	if !stats.characters.has(char_id):
 		stats.characters[char_id] = init_character_stats()
@@ -448,10 +450,11 @@ func update_stats(stats:CharacterStats):
 			stats.update_value(char_id, "MAX_DAMAGE", run_stats["MAX_DAMAGE"])
 			stats.update_value(char_id, "MAX_DAMAGE_SOURCE", run_stats["MAX_DAMAGE_SOURCE"])
 		
-		if stats.get_value(char_id, "ITEMS_OWNED", 0) < RunData.items.size() -1:
-			stats.update_value(char_id, "ITEMS_OWNED", RunData.items.size() - 1)
+		var items = RunData.get_player_items(0)
+		if stats.get_value(char_id, "ITEMS_OWNED", 0) < items.size() -1:
+			stats.update_value(char_id, "ITEMS_OWNED", items.size() - 1)
 		
-		stats.add_value(char_id, "OVERALL_ITEMS_OWNED", RunData.items.size() - 1)
+		stats.add_value(char_id, "OVERALL_ITEMS_OWNED", items.size() - 1)
 		
 		var stats_to_cmp = ["DAMAGE_DONE", "DAMAGE_DONE_OVERKILL", "HP_HEALED",
 			"MATERIALS_GAINED", "KILLS_ENEMIES", "LOOT_BOXES"]
@@ -477,7 +480,7 @@ func update_stats(stats:CharacterStats):
 
 
 func save():
-	var path = "user://" + ProgressData.get_user_id() + "/mod_advstats"
+	var path = "user://" + Platform.get_user_id() + "/mod_advstats"
 	
 	var d = Directory.new()
 	if !d.dir_exists(path):
@@ -497,7 +500,7 @@ func save():
 
 
 func load():
-	var mod_dir = "user://" + ProgressData.get_user_id() + "/mod_advstats"
+	var mod_dir = "user://" + Platform.get_user_id() + "/mod_advstats"
 	var path = mod_dir + "/save"
 	
 	var file = File.new()

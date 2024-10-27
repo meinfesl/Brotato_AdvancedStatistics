@@ -52,7 +52,7 @@ func element_focused(element:InventoryElement):
 		character_id = ""
 		$"%CharacterName".text = "All Characters"
 	
-	$"%CharacterIcon".texture = element.icon
+	$"%CharacterIcon".texture = element._icon.texture
 	
 	build_statistics_for_current_element()
 

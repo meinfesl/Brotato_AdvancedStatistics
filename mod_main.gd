@@ -19,16 +19,16 @@ func _init(_modLoader = ModLoaderMod):
 	ModLoaderMod.install_script_extension(EXT_PATH + "singletons/weapon_service.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/ingame/ingame_main_menu.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/ingame/pause_menu.gd")
-	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/ingame/upgrades_ui.gd")
+	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/ingame/upgrades_ui_player_container.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/shop/item_description.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/run/end_run.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/title_screen/title_screen.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "main.gd")
-	
+
 	var tracker = load(MOD_PATH + "stats_tracker.gd").new()
 	tracker.name = "StatsTracker"
 	add_child(tracker)
-	
+#
 	ModLoaderLog.info("Init.", MOD_NAME)
 
 

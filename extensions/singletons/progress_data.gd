@@ -2,25 +2,31 @@ extends "res://singletons/progress_data.gd"
 
 var mod_advstats
 
-func save(path:String = SAVE_PATH)->void:
-	.save(path)
+func save()->void:
+	.save()
 
 	mod_advstats.save()
 	
-func load_game_file(path:String = SAVE_PATH)->void:
-	.load_game_file(path)
+func load_game_file(try_fallback: = true)->void:
+	.load_game_file(try_fallback)
 	
 	mod_advstats = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker")
 	mod_advstats.load()
 
 func save_run_state(
-		shop_items:Array = [], 
-		reroll_price:int = 0, 
-		last_reroll_price:int = 0, 
-		initial_free_rerolls:int = 0, 
-		free_rerolls:int = 0
+		shop_items: = [], 
+		reroll_count: = [], 
+		paid_reroll_count: = [], 
+		initial_free_rerolls: = [], 
+		free_rerolls: = [], 
+		item_steals: = []
 	)->void:
-	.save_run_state(shop_items, reroll_price, last_reroll_price, initial_free_rerolls, free_rerolls)
+	.save_run_state(shop_items,
+		reroll_count, 
+		paid_reroll_count, 
+		initial_free_rerolls, 
+		free_rerolls, 
+		item_steals)
 	
 	mod_advstats.save_run_state()
 

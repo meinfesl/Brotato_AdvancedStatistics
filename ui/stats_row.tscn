@@ -1,6 +1,6 @@
 [gd_scene load_steps=3 format=2]
 
-[ext_resource path="res://resources/fonts/actual/base/font_small_text.tres" type="DynamicFont" id=1]
+[ext_resource path="res://resources/fonts/actual/base/font_smallest_text.tres" type="DynamicFont" id=1]
 [ext_resource path="res://mods-unpacked/meinfesl-AdvancedStatistics/ui/stats_row.gd" type="Script" id=2]
 
 [node name="MarginContainer" type="MarginContainer"]

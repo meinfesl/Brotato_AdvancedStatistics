@@ -1,10 +1,10 @@
 extends "res://entities/units/player/player.gd"
 
 
-func take_damage(value:int, hitbox:Hitbox = null, dodgeable:bool = true, armor_applied:bool = true, custom_sound:Resource = null, base_effect_scale:float = 1.0, bypass_invincibility:bool = false)->Array:
+func take_damage(value: int, args: TakeDamageArgs)->Array:
 	RunData.mod_advstats.damage_source = "item_riposte"
-	var dmg = .take_damage(value, hitbox, dodgeable, armor_applied, custom_sound, base_effect_scale, bypass_invincibility)
-	RunData.mod_advstats.on_player_damage_taken(self, value, dmg, hitbox)
+	var dmg = .take_damage(value, args)
+	RunData.mod_advstats.on_player_damage_taken(self, value, dmg, args)
 	RunData.mod_advstats.damage_source = ""
 	return dmg
 
@@ -16,9 +16,9 @@ func heal(value:int, is_from_torture:bool = false)->int:
 	return amount
 
 
-func _on_HealthRegenTimer_timeout()->void:
+func on_health_regen(loop_count:int)->void:
 	RunData.mod_advstats.heal_source = "HP_HEALED_REGEN"
-	._on_HealthRegenTimer_timeout()
+	.on_health_regen(loop_count)
 	RunData.mod_advstats.heal_source = ""
 
 
