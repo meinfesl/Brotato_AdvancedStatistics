@@ -180,11 +180,15 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 		run_stats["MAX_DAMAGE"] = damage[0]
 		
 		var weapons = RunData.get_player_weapons(0)
-		if hitbox && hitbox.from:
-			if is_instance_valid(hitbox.from) && "weapon_pos" in hitbox.from && hitbox.from.weapon_pos < weapons.size():
-				run_stats["MAX_DAMAGE_SOURCE"] = weapons[hitbox.from.weapon_pos].my_id
-		elif hitbox && hitbox.damage_tracking_key != "":
-			run_stats["MAX_DAMAGE_SOURCE"] = hitbox.damage_tracking_key
+		if hitbox:
+			if hitbox.from:
+				if is_instance_valid(hitbox.from) && "weapon_pos" in hitbox.from && hitbox.from.weapon_pos < weapons.size():
+					run_stats["MAX_DAMAGE_SOURCE"] = weapons[hitbox.from.weapon_pos].my_id
+				elif hitbox.damage_tracking_key != "":
+					run_stats["MAX_DAMAGE_SOURCE"] = hitbox.damage_tracking_key
+			# Is this obsolete?
+			elif hitbox.damage_tracking_key != "":
+				run_stats["MAX_DAMAGE_SOURCE"] = hitbox.damage_tracking_key
 		elif damage_source != "":
 			run_stats["MAX_DAMAGE_SOURCE"] = damage_source
 		elif tooltiptracking && tooltiptracking.damage_tracking_key != "":
@@ -192,11 +196,6 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 		else:
 			waiting_for_damage_source = true
 			run_stats["MAX_DAMAGE_SOURCE"] = ""
-		
-		if RunData.get_player_character(0):
-			if RunData.get_player_character(0).my_id == "character_lucky":
-				if run_stats["MAX_DAMAGE_SOURCE"] == "item_baby_elephant":
-					run_stats["MAX_DAMAGE_SOURCE"] = "character_lucky"
 	
 	damage_source = ""
 

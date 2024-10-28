@@ -1,6 +1,6 @@
 extends "res://singletons/item_service.gd"
 
 
-func get_shop_items(wave:int, number:int = NB_SHOP_ITEMS, shop_items:Array = [], locked_items:Array = [])->Array:
-	RunData.mod_advstats.on_shop_items_updated(number)
-	return .get_shop_items(wave, number, shop_items, locked_items)
+func get_player_shop_items(wave: int, player_index: int, args: ItemServiceGetShopItemsArgs)->Array:
+	RunData.mod_advstats.on_shop_items_updated(args.count)
+	return .get_player_shop_items(wave, player_index, args)
