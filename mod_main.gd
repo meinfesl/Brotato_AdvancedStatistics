@@ -7,7 +7,7 @@ const MOD_PATH = "res://mods-unpacked/meinfesl-AdvancedStatistics/"
 const EXT_PATH = MOD_PATH + "extensions/"
 
 
-func _init(_modLoader = ModLoaderMod):
+func _init():
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/enemies/enemy.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/neutral/neutral.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/player/player.gd")
