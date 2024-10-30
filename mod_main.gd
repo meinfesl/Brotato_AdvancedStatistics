@@ -12,7 +12,8 @@ func _init():
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/neutral/neutral.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/player/player.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "entities/units/unit/unit.gd")
-	ModLoaderMod.install_script_extension(EXT_PATH + "overlap/hitbox.gd")
+	# Currently exetending hitbox.gd doesn't work
+	#ModLoaderMod.install_script_extension(EXT_PATH + "overlap/hitbox.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "singletons/item_service.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "singletons/run_data.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "singletons/progress_data.gd")
@@ -35,5 +36,9 @@ func _init():
 func _ready():
 	var loader = ModLoaderMod.new()
 	loader.call_deferred("install_script_extension", EXT_PATH + "ui/menus/shop/shop.gd")
+	
+	var m = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker")
+	# Wait for dlc to load
+	m.call_deferred("load_tracked_items")
 	ModLoaderLog.info("Ready.", MOD_NAME)
 

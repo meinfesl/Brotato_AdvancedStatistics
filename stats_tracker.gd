@@ -47,37 +47,37 @@ class CharacterStats:
 			file.close()
 
 
-const tracked_items:Dictionary = {
-	"character_bull":"DAMAGE_DONE",
-	"character_glutton":"DAMAGE_DONE",
-	"character_lich":"DAMAGE_DONE",
-	"character_lucky":"DAMAGE_DONE",
-	"item_adrenaline":"HP_HEALED",
-	"item_alien_eyes":"DAMAGE_DONE",
-	"item_baby_elephant":"DAMAGE_DONE",
-	"item_baby_with_a_beard":"DAMAGE_DONE",
-	"item_bag":"MATERIALS_GAINED",
-	"item_cute_monkey":"HP_HEALED",
-	"item_cyberball":"DAMAGE_DONE",
-	"item_giant_belt":"DAMAGE_DONE",
-	"item_hunting_trophy":"MATERIALS_GAINED",
-	"item_landmines":"DAMAGE_DONE",
-	"item_metal_detector":"MATERIALS_GAINED",
-	"item_piggy_bank":"MATERIALS_GAINED",
-	"item_pocket_factory":"DAMAGE_DONE",
-	"item_recycling_machine":"MATERIALS_GAINED",
-	"item_rip_and_tear":"DAMAGE_DONE",
-	"item_riposte":"DAMAGE_DONE",
-	"item_scared_sausage":"DAMAGE_DONE",
-	"item_spicy_sauce":"DAMAGE_DONE",
-	"item_tentacle":"HP_HEALED",
-	"item_turret":"DAMAGE_DONE",
-	"item_turret_flame":"DAMAGE_DONE",
-	"item_turret_healing":"HP_HEALED",
-	"item_turret_laser":"DAMAGE_DONE",
-	"item_turret_rocket":"DAMAGE_DONE",
-	"item_tyler":"DAMAGE_DONE",
-}
+var tracked_items:Dictionary # = {
+#	"character_bull":"DAMAGE_DONE",
+#	"character_glutton":"DAMAGE_DONE",
+#	"character_lich":"DAMAGE_DONE",
+#	"character_lucky":"DAMAGE_DONE",
+#	"item_adrenaline":"HP_HEALED",
+#	"item_alien_eyes":"DAMAGE_DONE",
+#	"item_baby_elephant":"DAMAGE_DONE",
+#	"item_baby_with_a_beard":"DAMAGE_DONE",
+#	"item_bag":"MATERIALS_GAINED",
+#	"item_cute_monkey":"HP_HEALED",
+#	"item_cyberball":"DAMAGE_DONE",
+#	"item_giant_belt":"DAMAGE_DONE",
+#	"item_hunting_trophy":"MATERIALS_GAINED",
+#	"item_landmines":"DAMAGE_DONE",
+#	"item_metal_detector":"MATERIALS_GAINED",
+#	"item_piggy_bank":"MATERIALS_GAINED",
+#	"item_pocket_factory":"DAMAGE_DONE",
+#	"item_recycling_machine":"MATERIALS_GAINED",
+#	"item_rip_and_tear":"DAMAGE_DONE",
+#	"item_riposte":"DAMAGE_DONE",
+#	"item_scared_sausage":"DAMAGE_DONE",
+#	"item_spicy_sauce":"DAMAGE_DONE",
+#	"item_tentacle":"HP_HEALED",
+#	"item_turret":"DAMAGE_DONE",
+#	"item_turret_flame":"DAMAGE_DONE",
+#	"item_turret_healing":"HP_HEALED",
+#	"item_turret_laser":"DAMAGE_DONE",
+#	"item_turret_rocket":"DAMAGE_DONE",
+#	"item_tyler":"DAMAGE_DONE",
+#}
 
 onready var tooltiptracking = get_tree().get_root().get_node("ModLoader/meinfesl-TooltipTrackingFix")
 
@@ -233,7 +233,7 @@ func on_weapon_damage(pos, damage):
 		if burn:
 			run_stats["DAMAGE_BY_WEAPON_BURN"][pos] += damage
 		if waiting_for_damage_source:
-			run_stats["MAX_DAMAGE_SOURCE"] = RunData.weapons[pos].my_id
+			run_stats["MAX_DAMAGE_SOURCE"] = RunData.get_player_weapons(0)[pos].my_id
 			waiting_for_damage_source = false
 
 
@@ -477,6 +477,15 @@ func update_stats(stats:CharacterStats):
 			else:
 				dict[key] = run_stats["ITEMS_USAGE"][key]
 
+
+func load_tracked_items():
+	for item in ItemService.items:
+		if item.tracking_text == "DAMAGE_DEALT":
+			tracked_items[item.my_id] = "DAMAGE_DONE"
+		elif item.tracking_text == "HEALTH_RECOVERED":
+			tracked_items[item.my_id] = "HP_HEALED"
+		elif item.tracking_text == "MATERIALS_GAINED":
+			tracked_items[item.my_id] = "MATERIALS_GAINED"
 
 func save():
 	var path = "user://" + Platform.get_user_id() + "/mod_advstats"

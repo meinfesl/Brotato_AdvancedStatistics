@@ -113,16 +113,27 @@ func build_damage_stats():
 	if previous_weapons:
 		add_row("         Previous Weapons", make_pct(previous_weapons, damage_done))
 	
-	var tracked_items = {
-		"item_alien_eyes":0,
-		"item_baby_elephant":0,
-		"item_baby_with_a_beard":0,
-		"item_cyberball":0,
-		"item_rip_and_tear":0,
-		"item_riposte":0,
-		"item_scared_sausage":0,
-		"item_spicy_sauce":0,
-	}
+	var tracked_items = { }
+	var tracked_structures = { }
+	
+	for i in tracker.tracked_items:
+		if  tracker.tracked_items[i] == "DAMAGE_DONE":
+			if i.find("turret") != -1:
+				tracked_structures[i] = 0
+				continue
+			match i:
+				"item_gaint_belt":
+					pass
+				"item_greek_fire":
+					pass
+				"items_landmines":
+					tracked_structures[i] = 0
+				"item_tyler":
+					tracked_structures[i] = 0
+				"item_pocket_factory":
+					tracked_structures[i] = 0
+				_:
+					tracked_items[i] = 0
 	
 	var items = 0
 	for key in tracked_items:
@@ -136,16 +147,6 @@ func build_damage_stats():
 			var dmg = tracked_items[key]
 			if dmg:
 				add_row_item(3, key, dmg, damage_done)
-	
-	var tracked_structures = {
-		"item_landmines":0,
-		"item_turret":0,
-		"item_turret_flame":0,
-		"item_turret_laser":0,
-		"item_turret_rocket":0,
-		"item_tyler":0,
-		"item_pocket_factory":0,
-	}
 	
 	var structures = 0
 	for key in tracked_structures:
@@ -201,12 +202,11 @@ func build_survivability_stats():
 	add_row("   Hits Taken", "%d" % stats["HITS_TAKEN"])
 	add_row("   Hits Dodged", "%d" % stats["HITS_DODGED"])
 	
-	var tracked_items = {
-		"item_adrenaline":0,
-		"item_cute_monkey":0,
-		"item_tentacle":0,
-		"item_turret_healing":0,
-	}
+	var tracked_items = { }
+	
+	for i in tracker.tracked_items:
+		if tracker.tracked_items[i] == "HP_HEALED":
+			tracked_items[i] = 0
 	
 	var heal_total = stats["HP_HEALED"]
 	var fruit = stats["HP_HEALED_FRUIT"]
@@ -241,11 +241,13 @@ func build_econ_stats():
 	add_row("", "")
 	add_row("Economy:", "", other_color)
 	
-	var tracked_items = {
-		"item_bag":0,
-		"item_hunting_trophy":0,
-		"item_piggy_bank":0,
-	}
+	var tracked_items = { }
+	
+	for i in tracker.tracked_items:
+		if tracker.tracked_items[i] == "MATERIALS_GAINED":
+			if i == "item_metal_detector" or i == "item_recycling_machine":
+				continue
+			tracked_items[i] = 0
 	
 	var mat_all = stats["MATERIALS_GAINED"]
 	var mat_picked_up = stats["MATERIALS_GAINED_PICKED_UP"]
