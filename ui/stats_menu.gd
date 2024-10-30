@@ -121,6 +121,8 @@ func build_damage_stats():
 			if i.find("turret") != -1:
 				tracked_structures[i] = 0
 				continue
+			if i.find("character") != - 1:
+				continue
 			match i:
 				"item_gaint_belt":
 					pass

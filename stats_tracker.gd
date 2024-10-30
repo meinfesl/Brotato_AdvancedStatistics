@@ -486,6 +486,9 @@ func load_tracked_items():
 			tracked_items[item.my_id] = "HP_HEALED"
 		elif item.tracking_text == "MATERIALS_GAINED":
 			tracked_items[item.my_id] = "MATERIALS_GAINED"
+	for item in ItemService.characters:
+		if item.tracking_text == "DAMAGE_DEALT":
+			tracked_items[item.my_id] = "DAMAGE_DONE"
 
 func save():
 	var path = "user://" + Platform.get_user_id() + "/mod_advstats"
