@@ -47,38 +47,7 @@ class CharacterStats:
 			file.close()
 
 
-var tracked_items:Dictionary # = {
-#	"character_bull":"DAMAGE_DONE",
-#	"character_glutton":"DAMAGE_DONE",
-#	"character_lich":"DAMAGE_DONE",
-#	"character_lucky":"DAMAGE_DONE",
-#	"item_adrenaline":"HP_HEALED",
-#	"item_alien_eyes":"DAMAGE_DONE",
-#	"item_baby_elephant":"DAMAGE_DONE",
-#	"item_baby_with_a_beard":"DAMAGE_DONE",
-#	"item_bag":"MATERIALS_GAINED",
-#	"item_cute_monkey":"HP_HEALED",
-#	"item_cyberball":"DAMAGE_DONE",
-#	"item_giant_belt":"DAMAGE_DONE",
-#	"item_hunting_trophy":"MATERIALS_GAINED",
-#	"item_landmines":"DAMAGE_DONE",
-#	"item_metal_detector":"MATERIALS_GAINED",
-#	"item_piggy_bank":"MATERIALS_GAINED",
-#	"item_pocket_factory":"DAMAGE_DONE",
-#	"item_recycling_machine":"MATERIALS_GAINED",
-#	"item_rip_and_tear":"DAMAGE_DONE",
-#	"item_riposte":"DAMAGE_DONE",
-#	"item_scared_sausage":"DAMAGE_DONE",
-#	"item_spicy_sauce":"DAMAGE_DONE",
-#	"item_tentacle":"HP_HEALED",
-#	"item_turret":"DAMAGE_DONE",
-#	"item_turret_flame":"DAMAGE_DONE",
-#	"item_turret_healing":"HP_HEALED",
-#	"item_turret_laser":"DAMAGE_DONE",
-#	"item_turret_rocket":"DAMAGE_DONE",
-#	"item_tyler":"DAMAGE_DONE",
-#}
-
+var tracked_items:Dictionary
 onready var tooltiptracking = get_tree().get_root().get_node("ModLoader/meinfesl-TooltipTrackingFix")
 
 var wave_stats:Dictionary
@@ -111,6 +80,8 @@ var last_time = -1
 var waiting_for_damage_source = false
 var damage_source = ""
 
+var builder_turret_damage = 0
+
 var run_lost = false
 var run_won = false
 
@@ -129,6 +100,7 @@ func _ready():
 		
 	template_stats = init_character_stats()
 
+
 func _process(_delta):
 	var time_now = Time.get_ticks_msec()
 	var diff = time_now - last_time
@@ -144,6 +116,7 @@ func _process(_delta):
 
 func reset():
 	last_time = -1
+	builder_turret_damage = 0
 	run_lost = false
 	run_won = false
 	run_stats = init_run_stats()
@@ -175,6 +148,11 @@ func on_enemy_spawned(enemy):
 func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	run_stats["DAMAGE_DONE_OVERKILL"] += damage[0]
 	run_stats["DAMAGE_DONE"] += damage[1]
+	
+	for builder_turret in ["item_builder_turret_0", "item_builder_turret_1", "item_builder_turret_2", "item_builder_turret_3"]:
+		if hitbox.damage_tracking_key == builder_turret:
+			builder_turret_damage += damage[1]
+			break
 	
 	if run_stats["MAX_DAMAGE"] < damage[0]:
 		run_stats["MAX_DAMAGE"] = damage[0]
@@ -489,6 +467,7 @@ func load_tracked_items():
 	for item in ItemService.characters:
 		if item.tracking_text == "DAMAGE_DEALT":
 			tracked_items[item.my_id] = "DAMAGE_DONE"
+
 
 func save():
 	var path = "user://" + Platform.get_user_id() + "/mod_advstats"

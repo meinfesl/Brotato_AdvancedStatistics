@@ -83,14 +83,17 @@ func build_damage_stats():
 	
 	add_row("   Damage Done", "%d" % damage_done)
 	
-	var character_passive = RunData.tracked_item_effects[0].get(RunData.get_player_character(0).my_id, 0)
-	if character_passive:
-		var character = null
-		for it in items_container.get_children():
-			if it.item.my_id == RunData.get_player_character(0).my_id:
-				character = it
-				break
-		add_row("      Character Passive:", make_pct(character_passive, damage_done), other_color, character)
+	var character_passive = 0
+	var char_name = RunData.get_player_character(0).my_id
+	if tracker.tracked_items.get(char_name, "") == "DAMAGE_DONE":
+		character_passive = RunData.tracked_item_effects[0].get(char_name, 0)
+		if character_passive:
+			var character = null
+			for it in items_container.get_children():
+				if it.item.my_id == char_name:
+					character = it
+					break
+			add_row("      Character Passive:", make_pct(character_passive, damage_done), other_color, character)
 	
 	add_row("      Weapons", make_pct(weapon_damage, damage_done), other_color)
 	
@@ -156,15 +159,37 @@ func build_damage_stats():
 		tracked_structures[key] = dmg
 		structures += dmg
 	
+	var builder_turret = null
+	var builder_turret_damage = tracker.builder_turret_damage
+	for turret_name in ["item_builder_turret_0", "item_builder_turret_1", "item_builder_turret_2", "item_builder_turret_3"]:
+		builder_turret = RunData.get_player_item(turret_name, 0)
+		if builder_turret:
+			break
+	
+	if builder_turret_damage and RunData.get_player_item("item_turret_flame", 0) == null	:
+		builder_turret_damage += RunData.tracked_item_effects[0]["item_turret_flame"]
+	structures += builder_turret_damage
+	
 	if structures:
 		add_row("      Structures", make_pct(structures, damage_done), other_color)
 		for key in tracked_structures:
+			if key == "item_turret_flame":
+				if RunData.get_player_item("item_turret_flame", 0) == null:
+					continue
+			
 			var dmg = tracked_structures[key]
 			if dmg:
 				add_row("         %s" % tr(key.to_upper()), make_pct(dmg, damage_done))
 				var dmg_source = get_damage_source(key)
 				if dmg_source:
 					last_row.init_popup(null, standalone_popup, dmg_source)
+		
+		if builder_turret_damage:
+			add_row("         %s" % tr("ITEM_BUILDER_TURRET"), make_pct(builder_turret_damage, damage_done))
+			for element in items_container.get_children():
+				if element.item == builder_turret:
+					last_row.init_popup(inventory_popup, null, element)
+					break
 	
 	var other_damage = damage_done - character_passive - weapon_damage - items - structures
 	
