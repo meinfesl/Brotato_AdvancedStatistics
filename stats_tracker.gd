@@ -150,7 +150,7 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	run_stats["DAMAGE_DONE"] += damage[1]
 	
 	for builder_turret in ["item_builder_turret_0", "item_builder_turret_1", "item_builder_turret_2", "item_builder_turret_3"]:
-		if hitbox.damage_tracking_key == builder_turret:
+		if hitbox and hitbox.damage_tracking_key == builder_turret:
 			builder_turret_damage += damage[1]
 			break
 	
