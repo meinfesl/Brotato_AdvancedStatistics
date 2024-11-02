@@ -127,11 +127,11 @@ func build_damage_stats():
 			if i.find("character") != - 1:
 				continue
 			match i:
-				"item_gaint_belt":
+				"item_giant_belt":
 					pass
 				"item_greek_fire":
 					pass
-				"items_landmines":
+				"item_landmines":
 					tracked_structures[i] = 0
 				"item_tyler":
 					tracked_structures[i] = 0
