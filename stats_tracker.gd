@@ -388,6 +388,7 @@ func on_room_clean_up(is_run_lost:bool, is_run_won:bool):
 
 func update_character_stats(char_id, stats:CharacterStats):
 	var char_stats = [
+		"stat_curse",
 		"stat_max_hp",
 		"stat_hp_regeneration",
 		"stat_lifesteal",

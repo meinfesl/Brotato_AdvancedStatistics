@@ -152,6 +152,7 @@ func build_statistics():
 	make_row("   Loot Boxes", format_number(get_total("OVERALL_LOOT_BOXES")))
 	
 	var char_stats = [
+		"STAT_CURSE",
 		"STAT_MAX_HP",
 		"STAT_HP_REGENERATION",
 		"STAT_LIFESTEAL",
