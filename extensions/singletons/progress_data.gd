@@ -4,7 +4,9 @@ var mod_advstats
 
 func save()->void:
 	.save()
-
+	
+	if not mod_advstats:
+		mod_advstats = get_tree().get_root().get_node("ModLoader/meinfesl-AdvancedStatistics/StatsTracker")
 	mod_advstats.save()
 	
 func load_game_file(try_fallback: = true)->void:

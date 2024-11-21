@@ -9,10 +9,10 @@ func _ready():
 	button_player_info.text = "Player Info"
 	button_player_info.connect("pressed", self, "mod_advstats_menu_button_pressed")
 	
-	$MarginContainer/Menus/MainMenu/HBoxContainer/ButtonsLeft.add_child_below_node(
-		$MarginContainer/Menus/MainMenu/HBoxContainer/ButtonsLeft/ProgressButton, button_player_info)
+	$Menus/MainMenu/MarginContainer/VBoxContainer/HBoxContainer/ButtonsLeft.add_child_below_node(
+		$Menus/MainMenu/MarginContainer/VBoxContainer/HBoxContainer/ButtonsLeft/ProgressButton, button_player_info)
 	
-	_main_menu.set_neighbours(button_player_info, $MarginContainer/Menus/MainMenu/HBoxContainer/ButtonsRight/CommunityButton)
+	_main_menu.set_neighbours(button_player_info, $Menus/MainMenu/MarginContainer/VBoxContainer/HBoxContainer/ButtonsRight/CommunityButton)
 	
 	var button_back = mod_advstat_menu_player_info.get_node("MarginContainer/VBoxContainer/ButtonBack")
 	
