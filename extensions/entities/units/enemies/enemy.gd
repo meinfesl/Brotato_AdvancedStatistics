@@ -4,7 +4,8 @@ extends "res://entities/units/enemies/enemy.gd"
 func init(zone_min_pos: Vector2, zone_max_pos: Vector2, p_players_ref: Array = [], entity_spawner_ref = null)->void:
 	.init(zone_min_pos, zone_max_pos, p_players_ref, entity_spawner_ref)
 	
-	RunData.mod_advstats.on_enemy_spawned(self)
+	if not (zone_min_pos == Vector2.ZERO and zone_max_pos == Vector2.ZERO):
+		RunData.mod_advstats.on_enemy_spawned(self)
 
 
 func take_damage(value: int, args: TakeDamageArgs)->Array:

@@ -140,9 +140,8 @@ func on_game_unpaused():
 
 
 func on_enemy_spawned(enemy):
-	if enemy.stats.always_drop_consumables:
-		if enemy.stats.value == 8:
-			run_stats["SPAWNED_LOOT_ALIENS"] += 1
+	if enemy.is_loot:
+		run_stats["SPAWNED_LOOT_ALIENS"] += 1
 
 
 func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
