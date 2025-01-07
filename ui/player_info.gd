@@ -134,7 +134,7 @@ func build_statistics():
 	if dmg_source:
 		last_row.init_popup(null, $ItemPopup, dmg_source)
 	
-	make_row("   HP Helaed", format_number(get_highest("HP_HEALED")))
+	make_row("   HP Healed", format_number(get_highest("HP_HEALED")))
 	make_row("   Materials Gained", format_number(get_highest("MATERIALS_GAINED")))
 	make_row("   Enemies Killed", format_number(get_highest("KILLS_ENEMIES")))
 	make_row("   Items Owned", format_number(get_highest("ITEMS_OWNED")))
