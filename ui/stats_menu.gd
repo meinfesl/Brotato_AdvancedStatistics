@@ -155,6 +155,10 @@ func build_damage_stats():
 	
 	var structures = 0
 	for key in tracked_structures:
+		# Builder turret
+		if key == "item_turret_flame":
+			if RunData.get_player_item("item_turret_flame", 0) == null:
+				continue
 		var dmg = RunData.tracked_item_effects[0].get(key, 0)
 		tracked_structures[key] = dmg
 		structures += dmg
@@ -166,12 +170,13 @@ func build_damage_stats():
 		if builder_turret:
 			break
 	
-	if builder_turret_damage and RunData.get_player_item("item_turret_flame", 0) == null	:
+	if builder_turret_damage and RunData.get_player_item("item_turret_flame", 0) == null:
 		builder_turret_damage += RunData.tracked_item_effects[0]["item_turret_flame"]
 	structures += builder_turret_damage
 	
 	if structures:
 		add_row("      Structures", make_pct(structures, damage_done), other_color)
+		# Builder turret
 		for key in tracked_structures:
 			if key == "item_turret_flame":
 				if RunData.get_player_item("item_turret_flame", 0) == null:
