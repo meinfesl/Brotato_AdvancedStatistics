@@ -44,7 +44,7 @@ func on_item_box_discard_button_pressed(item_data:ItemParentData, consumable:Upg
 	RunData.mod_advstats.on_loot_box_discarded()
 
 
-func clean_up_room(is_last_wave:bool = false, is_run_lost:bool = false, is_run_won:bool = false)->void:
+func clean_up_room(is_last_wave: bool, is_run_lost: bool, is_run_won: bool)->void :
 	.clean_up_room(is_last_wave, is_run_lost, is_run_won)
 	
 	RunData.mod_advstats.on_room_clean_up(is_run_lost, is_run_won)
