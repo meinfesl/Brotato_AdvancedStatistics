@@ -329,6 +329,9 @@ func build_econ_stats():
 	if spent_other:
 		add_row("      Other Sources", make_pct(spent_other, spent_all), other_color)
 	
+	if RunData.get_player_character(0).my_id == "character_builder":
+		add_row("   Materials consumed by Builder's turret", "%d" % stats["MATERIALS_CONVERTED"])
+	
 	add_row("   Shop Items Browsed", "%d" % stats["SHOP_ITEMS_BROWSED"])
 	add_row("      Shop Items Bought", make_pct(stats["SHOP_ITEMS_BOUGHT"], stats["SHOP_ITEMS_BROWSED"]), other_color)
 	

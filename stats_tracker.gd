@@ -99,6 +99,7 @@ func _ready():
 		character_stats_endless.push_back(data)
 		
 	template_stats = init_character_stats()
+	var _err = RunData.connect("bonus_gold_converted", self, "on_gold_converted");
 
 
 func _process(_delta):
@@ -290,6 +291,10 @@ func on_materials_spent(value):
 
 func on_materials_gained_from_weapon_crit():
 	run_stats["MATERIALS_GAINED_WEAPON_CRIT"] += 1
+
+
+func on_gold_converted(total_bonus_gold, _nb_materials_per_conversion, _nb_stats_added_per_conversion):
+	run_stats["MATERIALS_CONVERTED"] = total_bonus_gold;
 
 
 func on_shop_items_updated(item_count:int):
@@ -581,6 +586,7 @@ func init_run_stats()->Dictionary:
 		"MATERIALS_SPENT_SHOP":0,
 		"MATERIALS_SPENT_REROLL_SHOP":0,
 		"MATERIALS_SPENT_REROLL_LEVEL_UP":0,
+		"MATERIALS_CONVERTED":0,
 		"LOOT_BOXES":0,
 		"LOOT_BOXES_TAKEN":0,
 		"LOOT_BOXES_DISCARDED":0,
