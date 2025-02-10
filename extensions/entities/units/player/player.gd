@@ -26,3 +26,8 @@ func on_lifesteal_effect(value:int)->void:
 	RunData.mod_advstats.heal_source = "HP_HEALED_LIFESTEAL"
 	.on_lifesteal_effect(value)
 	RunData.mod_advstats.heal_source = ""
+
+func on_heal_over_time_timer_timeout()->void :
+	RunData.mod_advstats.heal_source = "HP_HEALED_FRUIT"
+	.on_heal_over_time_timer_timeout()
+	RunData.mod_advstats.heal_source = ""

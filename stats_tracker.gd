@@ -265,7 +265,7 @@ func on_tree_killed():
 
 
 func on_player_healed(value:int):
-	if levelup:
+	if levelup or not wave_in_progress: # Fruit autocollection, do not coun't towards effective heal
 		return
 		
 	run_stats["HP_HEALED"] += value
