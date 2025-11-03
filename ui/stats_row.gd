@@ -40,7 +40,7 @@ func init_popup(inventory, standalone, content):
 
 
 func show_popup():
-	if !popup_content:
+	if popup_content == null:
 		return
 	
 	if inventory_popup:
