@@ -189,7 +189,10 @@ func on_player_damage_taken(player, base_damage, damage_taken:Array, args):
 		run_stats["DAMAGE_TAKEN"] += damage_taken[1]
 		if args.hitbox:
 			run_stats["HITS_TAKEN"] += 1
-			var result = player.get_damage_value(base_damage, args.from_player_index, args.armor_applied, args.dodgeable, false, args.hitbox, args.is_burning)
+			var result: = Unit.GetDamageValueResult.new()
+			var armor_coef = RunData.get_armor_coef(player.current_stats.armor)
+			result.value = max(1, round(base_damage * armor_coef)) as int if args.armor_applied else base_damage
+
 			if result.value == damage_taken[1]:
 				var dmg = base_damage - damage_taken[1]
 				if dmg > 0:
