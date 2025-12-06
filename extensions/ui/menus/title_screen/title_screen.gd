@@ -2,10 +2,10 @@ extends "res://ui/menus/title_screen/title_screen.gd"
 
 
 onready var mod_advstat_menu_player_info = load("res://mods-unpacked/meinfesl-AdvancedStatistics/ui/player_info.tscn").instance()
-
+var button_player_info
 
 func _ready():
-	var button_player_info = MyMenuButton.new()
+	button_player_info = MyMenuButton.new()
 	button_player_info.text = "Player Info"
 	button_player_info.connect("pressed", self, "mod_advstats_menu_button_pressed")
 	
@@ -29,6 +29,7 @@ func mod_advstats_menu_button_pressed():
 
 func mod_advstats_back_button_pressed():
 	_menus.switch(mod_advstat_menu_player_info, _main_menu)
+	button_player_info.grab_focus()
 
 
 func mod_advstats_save_if_needed(_from, _to):
