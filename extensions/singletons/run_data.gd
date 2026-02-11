@@ -53,6 +53,11 @@ func remove_all_weapons(player_index: int)->void:
 	.remove_all_weapons(player_index)
 	mod_advstats.remove_all_weapons()
 
+func add_tracked_value(player_index: int, tracking_key: int, value: float, index: int = 0)->void :
+	.add_tracked_value(player_index, tracking_key, value, index)
+
+	mod_advstats.add_tracked_value(tracking_key, value)
+	
 
 # Why here? because it's in _ready of main.gd
 func reset_cache()->void:

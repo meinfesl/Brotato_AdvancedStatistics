@@ -81,10 +81,17 @@ var waiting_for_damage_source = false
 var damage_source = ""
 
 var builder_turret_damage = 0
+var lootworm_damage = 0
 
 var run_lost = false
 var run_won = false
 
+var hash_item_builder_turrets = [
+	Keys.generate_hash("item_builder_turret_0"),
+	Keys.generate_hash("item_builder_turret_1"),
+	Keys.generate_hash("item_builder_turret_2"),
+	Keys.generate_hash("item_builder_turret_3")
+]
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
@@ -118,6 +125,7 @@ func _process(_delta):
 func reset():
 	last_time = -1
 	builder_turret_damage = 0
+	lootworm_damage = 0
 	run_lost = false
 	run_won = false
 	run_stats = init_run_stats()
@@ -149,28 +157,31 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	run_stats["DAMAGE_DONE_OVERKILL"] += damage[0]
 	run_stats["DAMAGE_DONE"] += damage[1]
 	
-	for builder_turret in ["item_builder_turret_0", "item_builder_turret_1", "item_builder_turret_2", "item_builder_turret_3"]:
-		if hitbox and hitbox.damage_tracking_key == builder_turret:
+	for builder_turret in hash_item_builder_turrets:
+		if hitbox and hitbox.damage_tracking_key_hash == builder_turret:
 			builder_turret_damage += damage[1]
 			break
 	
 	if run_stats["MAX_DAMAGE"] < damage[0]:
 		run_stats["MAX_DAMAGE"] = damage[0]
 		
-		var weapons = RunData.get_player_weapons(0)
 		if hitbox:
 			if hitbox.from:
+				var weapons = RunData.get_player_weapons(0)
 				if is_instance_valid(hitbox.from) && "weapon_pos" in hitbox.from && hitbox.from.weapon_pos < weapons.size():
 					run_stats["MAX_DAMAGE_SOURCE"] = weapons[hitbox.from.weapon_pos].my_id
-				elif hitbox.damage_tracking_key != "":
-					run_stats["MAX_DAMAGE_SOURCE"] = hitbox.damage_tracking_key
+				elif hitbox.damage_tracking_key_hash != Keys.empty_hash:
+					run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string[hitbox.damage_tracking_key_hash]
+				else:
+					waiting_for_damage_source = true
+					run_stats["MAX_DAMAGE_SOURCE"] = ""
 			# Is this obsolete?
-			elif hitbox.damage_tracking_key != "":
-				run_stats["MAX_DAMAGE_SOURCE"] = hitbox.damage_tracking_key
+			elif hitbox.damage_tracking_key_hash != Keys.empty_hash:
+				run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string[hitbox.damage_tracking_key_hash]
 		elif damage_source != "":
 			run_stats["MAX_DAMAGE_SOURCE"] = damage_source
-		elif tooltiptracking && tooltiptracking.damage_tracking_key != "":
-			run_stats["MAX_DAMAGE_SOURCE"] = tooltiptracking.damage_tracking_key
+		elif tooltiptracking && tooltiptracking.damage_tracking_key != Keys.empty_hash:
+			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string(tooltiptracking.damage_tracking_key)
 		else:
 			waiting_for_damage_source = true
 			run_stats["MAX_DAMAGE_SOURCE"] = ""
@@ -335,11 +346,11 @@ func get_percent_text_for_item(item)->String:
 	if !tracked_items.has(item.my_id):
 		return ""
 		
-	if !RunData.tracked_item_effects[0].has(item.my_id):
+	if !RunData.tracked_item_effects[0].has(item.get_my_id_hash()):
 		return ""
 		
 	var total = run_stats[tracked_items[item.my_id]]
-	var value = RunData.tracked_item_effects[0][item.my_id]
+	var value = RunData.tracked_item_effects[0][item.get_my_id_hash()]
 	var pct = 0.0
 	if total:
 		pct = value * 100.0 / total
@@ -392,6 +403,12 @@ func on_room_clean_up(is_run_lost:bool, is_run_won:bool):
 	
 	update_stats(stats)
 
+func add_tracked_value(tracking_key, value):
+	if waiting_for_damage_source:
+		var string_key = Keys.hash_to_string[tracking_key]
+		if tracked_items.get(string_key, "") == "DAMAGE_DONE":
+			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string[tracking_key]
+			waiting_for_damage_source = false
 
 func update_character_stats(char_id, stats:CharacterStats):
 	var char_stats = [
@@ -415,8 +432,9 @@ func update_character_stats(char_id, stats:CharacterStats):
 	]
 	
 	for stat in char_stats:
-		if stats.get_value(char_id, stat.to_upper(), 0) < Utils.get_stat(stat, 0):
-			stats.update_value(char_id, stat.to_upper(), Utils.get_stat(stat, 0))
+		var hash_stat = Keys.generate_hash(stat)
+		if stats.get_value(char_id, stat.to_upper(), 0) < Utils.get_stat(hash_stat, 0):
+			stats.update_value(char_id, stat.to_upper(), Utils.get_stat(hash_stat, 0))
 	
 	if stats.get_value(char_id, "LEVEL", 0) < RunData.get_player_level(0):
 		stats.update_value(char_id, "LEVEL", RunData.get_player_level(0))
@@ -466,7 +484,7 @@ func update_stats(stats:CharacterStats):
 
 func load_tracked_items():
 	for item in ItemService.items:
-		if item.tracking_text == "DAMAGE_DEALT":
+		if item.tracking_text == "DAMAGE_DEALT" or item.tracking_text == "EXPLOSION_DAMAGE_DEALT":
 			tracked_items[item.my_id] = "DAMAGE_DONE"
 		elif item.tracking_text == "HEALTH_RECOVERED":
 			tracked_items[item.my_id] = "HP_HEALED"

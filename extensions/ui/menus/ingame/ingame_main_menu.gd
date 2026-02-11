@@ -2,7 +2,7 @@ extends "res://ui/menus/ingame/ingame_main_menu.gd"
 
 var mod_advstats_button
 var mod_advstats_menu
-onready var mod_advstats_vbox = $MarginContainer/HBoxContainer/HBoxContainer/VBoxContainer
+onready var mod_advstats_vbox = $MarginContainer/VBoxContainer/HBoxContainer/HBoxContainer/VBoxContainer
 
 
 func _ready():
@@ -25,7 +25,7 @@ func _ready():
 	mod_advstats_menu.inventory_popup = $ItemPopup
 	mod_advstats_menu.standalone_popup = standalone_popup
 
-	$MarginContainer/HBoxContainer/HBoxContainer.add_child_below_node(mod_advstats_vbox, mod_advstats_menu)
+	$MarginContainer/VBoxContainer/HBoxContainer/HBoxContainer.add_child_below_node(mod_advstats_vbox, mod_advstats_menu)
 
 	_error = get_parent().get_parent().connect("paused", mod_advstats_menu, "build_statistics")
 
@@ -35,7 +35,7 @@ func mod_advstats_button_pressed():
 		var x = mod_advstats_vbox.rect_size.x
 		mod_advstats_vbox.hide()
 		mod_advstats_menu.rect_min_size.x = x
-		var size_diff = $MarginContainer/HBoxContainer/HBoxContainer.rect_size.y - $"%StatsContainer".rect_size.y
+		var size_diff = $MarginContainer/VBoxContainer/HBoxContainer/HBoxContainer.rect_size.y - $"%StatsContainer".rect_size.y
 		mod_advstats_menu.build_statistics()
 		mod_advstats_menu.add_constant_override("margin_top", size_diff / 2)
 		mod_advstats_menu.add_constant_override("margin_bottom", size_diff / 2)

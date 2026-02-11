@@ -33,8 +33,8 @@ func init():
 	inventory.add_special_element(potato, true)
 	inventory.set_elements(ItemService.characters, false, false)
 	
-	$"%ButtonD5".set_pressed_no_signal(mod_state["BUTTON_D5_ONLY"])
-	$"%ButtonNoEndless".set_pressed_no_signal(mod_state["BUTTON_NO_ENDLESS"])
+	$"%ButtonD5".set_pressed_no_signal(mod_state.get("BUTTON_D5_ONLY", 0))
+	$"%ButtonNoEndless".set_pressed_no_signal(mod_state.get("BUTTON_NO_ENDLESS", 0))
 	
 	inventory.get_child(0).grab_focus()
 	call_deferred("make_even")

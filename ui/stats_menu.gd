@@ -24,7 +24,8 @@ func build_statistic_impl():
 		vbox.remove_child(child)
 		child.queue_free()
 	
-	RunData.tracked_item_effects[0]["item_scared_sausage"] = RunData.mod_advstats.run_stats["DAMAGE_SAUSAGE"]
+	RunData.tracked_item_effects[0][Keys.item_scared_sausage_hash] = RunData.mod_advstats.run_stats["DAMAGE_SAUSAGE"]
+	
 	build_damage_stats()
 	build_survivability_stats()
 	build_enemies_stats()
@@ -86,7 +87,7 @@ func build_damage_stats():
 	var character_passive = 0
 	var char_name = RunData.get_player_character(0).my_id
 	if tracker.tracked_items.get(char_name, "") == "DAMAGE_DONE":
-		character_passive = RunData.tracked_item_effects[0].get(char_name, 0)
+		character_passive = RunData.tracked_item_effects[0].get(Keys.generate_hash(char_name), 0)
 		if character_passive:
 			var character = null
 			for it in items_container.get_children():
@@ -142,9 +143,18 @@ func build_damage_stats():
 	
 	var items = 0
 	for key in tracked_items:
-		var dmg = RunData.tracked_item_effects[0].get(key, 0)
-		tracked_items[key] = dmg
-		items += dmg
+		var dmg = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		if dmg is Array:
+			for d in dmg:
+				tracked_items[key] += d
+				items += d
+		else:
+			tracked_items[key] = dmg
+			items += dmg
+	
+	if tracker.lootworm_damage > 0:
+		items += tracker.lootworm_damage
+		tracked_items["item_lootworm"] = tracker.lootworm_damage
 	
 	if items:
 		add_row("      Items", make_pct(items, damage_done), other_color)
@@ -157,21 +167,27 @@ func build_damage_stats():
 	for key in tracked_structures:
 		# Builder turret
 		if key == "item_turret_flame":
-			if RunData.get_player_character(0).my_id == "character_builder" and RunData.get_player_item("item_turret_flame", 0) == null:
+			if RunData.get_player_character(0).my_id == "character_builder" and RunData.get_player_item(Keys.item_turret_flame_hash, 0) == null:
 				continue
-		var dmg = RunData.tracked_item_effects[0].get(key, 0)
-		tracked_structures[key] = dmg
-		structures += dmg
+		var dmg = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		if dmg is Array:
+			for d in dmg:
+				tracked_structures[key] += d
+				structures += d
+		else:
+			tracked_structures[key] = dmg
+			structures += dmg
 	
 	var builder_turret = null
 	var builder_turret_damage = tracker.builder_turret_damage
-	for turret_name in ["item_builder_turret_0", "item_builder_turret_1", "item_builder_turret_2", "item_builder_turret_3"]:
-		builder_turret = RunData.get_player_item(turret_name, 0)
+	for turret_hash in Keys.item_builder_turret_n_hash:
+		builder_turret = RunData.get_player_item(turret_hash, 0)
 		if builder_turret:
 			break
 	
-	if builder_turret_damage and RunData.get_player_item("item_turret_flame", 0) == null:
-		builder_turret_damage += RunData.tracked_item_effects[0]["item_turret_flame"]
+	
+	if builder_turret_damage and RunData.get_player_item(Keys.item_turret_flame_hash, 0) == null:
+		builder_turret_damage += RunData.tracked_item_effects[0][Keys.item_turret_flame_hash]
 	structures += builder_turret_damage
 	
 	if structures:
@@ -179,7 +195,7 @@ func build_damage_stats():
 		# Builder turret
 		for key in tracked_structures:
 			if RunData.get_player_character(0).my_id == "character_builder" and key == "item_turret_flame":
-				if RunData.get_player_item("item_turret_flame", 0) == null:
+				if RunData.get_player_item(Keys.item_turret_flame_hash, 0) == null:
 					continue
 			
 			var dmg = tracked_structures[key]
@@ -247,7 +263,11 @@ func build_survivability_stats():
 	
 	var items = 0
 	for key in tracked_items:
-		var heal = RunData.tracked_item_effects[0].get(key, 0)
+		var heal = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		if heal is Array:
+			for h in heal:
+				tracked_items[key] += h
+				items += h
 		tracked_items[key] = heal
 		items += heal
 	
@@ -288,10 +308,18 @@ func build_econ_stats():
 	var mat_recycling = stats["MATERIALS_GAINED_RECYCLING"]
 	var mat_recycling_machine = RunData.tracked_item_effects[0].get("item_recycling_machine", 0)
 	var mat_crit = stats["MATERIALS_GAINED_WEAPON_CRIT"]
+
+	# it's already included in picked up
+	var lootworm = RunData.tracked_item_effects[0].get(Keys.generate_hash("item_lootworm"), 0)
+	mat_picked_up -= lootworm
 	
 	var items = 0
 	for key in tracked_items:
-		var materials = RunData.tracked_item_effects[0].get(key, 0)
+		var materials = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
+		if materials is Array:
+			for m in materials:
+				tracked_items[key] += m
+				items += m
 		tracked_items[key] = materials
 		items += materials
 	
@@ -386,7 +414,7 @@ func make_item_name(padding:int, id:String)->String:
 	for i in padding:
 		string += "   "
 	string += tr(id.to_upper())
-	var nb = RunData.get_nb_item(id, 0)
+	var nb = RunData.get_nb_item(Keys.generate_hash(id), 0)
 	if nb > 1:
 		string += " (x%d)" % nb
 	return string
