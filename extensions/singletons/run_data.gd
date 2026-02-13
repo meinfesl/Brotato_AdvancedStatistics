@@ -64,3 +64,11 @@ func reset_cache()->void:
 	.reset_cache()
 	#var val:int = tracked_item_effects[0]["item_piggy_bank"]
 	#tracked_item_effects[0]["item_piggy_bank"] = val
+
+func init_tracked_effects() -> Dictionary:
+	var base = .init_tracked_effects()
+	var ext = {
+		Keys.generate_hash("item_pocket_factory"):0,
+	}
+	base.merge(ext)
+	return base

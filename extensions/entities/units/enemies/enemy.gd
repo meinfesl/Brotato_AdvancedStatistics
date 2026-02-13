@@ -14,7 +14,7 @@ func take_damage(value: int, args: TakeDamageArgs)->Array:
 	return dmg
 
 
-func die(args: = Entity.DieArgs.new())->void:
+func die(args: = Utils.default_die_args)->void:
 	.die(args)
 	
 	#p_cleaning_up is not viable on_group_spawn_timing_reached calls just die()

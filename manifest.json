@@ -1,10 +1,10 @@
 {
 	"name": "AdvancedStatistics",
 	"namespace": "meinfesl",
-	"version_number": "1.0.17",
+	"version_number": "1.0.18",
 	"description": "Adds detailed statistics for damage/healing/materials/etc. Also keeps track of wins/losses and some other stats for each character.",
 	"website_url": "",
-	"dependencies": [ "meinfesl-TooltipTrackingFix" ],
+	"dependencies": [ ],
 	"extra": {
 		"godot": {
 			"incompatibilities": [],

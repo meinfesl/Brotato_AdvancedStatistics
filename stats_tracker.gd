@@ -48,7 +48,6 @@ class CharacterStats:
 
 
 var tracked_items:Dictionary
-onready var tooltiptracking = get_tree().get_root().get_node("ModLoader/meinfesl-TooltipTrackingFix")
 
 var wave_stats:Dictionary
 var run_stats:Dictionary
@@ -79,9 +78,12 @@ var last_time = -1
 
 var waiting_for_damage_source = false
 var damage_source = ""
+var damage_tracking_key = Keys.empty_hash
 
 var builder_turret_damage = 0
 var lootworm_damage = 0
+
+var sturcure_spawn_counter = 0
 
 var run_lost = false
 var run_won = false
@@ -126,6 +128,7 @@ func reset():
 	last_time = -1
 	builder_turret_damage = 0
 	lootworm_damage = 0
+	sturcure_spawn_counter = 0
 	run_lost = false
 	run_won = false
 	run_stats = init_run_stats()
@@ -152,6 +155,18 @@ func on_enemy_spawned(enemy):
 	if enemy.is_loot:
 		run_stats["SPAWNED_LOOT_ALIENS"] += 1
 
+func on_structure_spawned(structure):
+	sturcure_spawn_counter += 1
+	
+	var path = structure.get_path()
+	var structure_name = path.get_name(path.get_name_count() - 1)
+	
+	if structure_name.begins_with("@"):
+		structure_name = structure_name.substr(1)
+			
+	if structure_name.begins_with("Turret"):
+		if sturcure_spawn_counter > RunData.get_player_effect(Keys.structures_hash, 0).size():
+			structure.mod_tooltiptracking_key = Keys.item_pocket_factory_hash
 
 func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	run_stats["DAMAGE_DONE_OVERKILL"] += damage[0]
@@ -180,8 +195,8 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 				run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string[hitbox.damage_tracking_key_hash]
 		elif damage_source != "":
 			run_stats["MAX_DAMAGE_SOURCE"] = damage_source
-		elif tooltiptracking && tooltiptracking.damage_tracking_key != Keys.empty_hash:
-			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string(tooltiptracking.damage_tracking_key)
+		elif damage_tracking_key != Keys.empty_hash:
+			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string(damage_tracking_key)
 		else:
 			waiting_for_damage_source = true
 			run_stats["MAX_DAMAGE_SOURCE"] = ""
