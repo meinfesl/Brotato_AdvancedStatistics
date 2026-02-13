@@ -145,9 +145,11 @@ func build_damage_stats():
 	for key in tracked_items:
 		var dmg = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
 		if dmg is Array:
-			for d in dmg:
-				tracked_items[key] += d
-				items += d
+			tracked_items[key] += dmg[0]
+			items += dmg[0]
+			if key == "item_bonk_dog":
+				tracked_items[key] += dmg[1]
+				items += dmg[1]
 		else:
 			tracked_items[key] = dmg
 			items += dmg

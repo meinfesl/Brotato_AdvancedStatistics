@@ -351,6 +351,9 @@ func get_percent_text_for_item(item)->String:
 		
 	var total = run_stats[tracked_items[item.my_id]]
 	var value = RunData.tracked_item_effects[0][item.get_my_id_hash()]
+	# Temp fix for two values in tooltip
+	if value is Array:
+		return ""
 	var pct = 0.0
 	if total:
 		pct = value * 100.0 / total
