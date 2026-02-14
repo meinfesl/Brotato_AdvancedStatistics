@@ -64,36 +64,30 @@ var materials_source = ""
 
 var levelup:bool = false
 
-var combining_weapons = false
-var combining_weapons_damage = 0
-var combining_weapons_damage_burn = 0
+var combining_weapons:bool = false
+var combining_weapons_damage:int = 0
+var combining_weapons_damage_burn:int = 0
 
 var exploding_weapon = null
 
-var burn = false
-var sausage = false
-var run_in_progress = false
-var wave_in_progress = false
-var last_time = -1
+var burn:bool = false
+var sausage:bool = false
+var run_in_progress:bool = false
+var wave_in_progress:bool = false
+var last_time:int = -1
 
-var waiting_for_damage_source = false
-var damage_source = ""
-var damage_tracking_key = Keys.empty_hash
+var waiting_for_damage_source:bool = false
+var damage_source:String = ""
+var damage_tracking_key:int = Keys.empty_hash
 
-var builder_turret_damage = 0
-var lootworm_damage = 0
+var builder_turret_damage:int = 0
+var lootworm_damage:int = 0
 
-var sturcure_spawn_counter = 0
+var sturcure_spawn_counter:int = 0
 
-var run_lost = false
-var run_won = false
+var run_lost:bool = false
+var run_won:bool = false
 
-var hash_item_builder_turrets = [
-	Keys.generate_hash("item_builder_turret_0"),
-	Keys.generate_hash("item_builder_turret_1"),
-	Keys.generate_hash("item_builder_turret_2"),
-	Keys.generate_hash("item_builder_turret_3")
-]
 
 func _ready():
 	pause_mode = Node.PAUSE_MODE_PROCESS
@@ -172,7 +166,7 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	run_stats["DAMAGE_DONE_OVERKILL"] += damage[0]
 	run_stats["DAMAGE_DONE"] += damage[1]
 	
-	for builder_turret in hash_item_builder_turrets:
+	for builder_turret in Keys.item_builder_turret_n_hash:
 		if hitbox and hitbox.damage_tracking_key_hash == builder_turret:
 			builder_turret_damage += damage[1]
 			break
@@ -422,7 +416,15 @@ func on_room_clean_up(is_run_lost:bool, is_run_won:bool):
 	update_stats(stats)
 
 func add_tracked_value(tracking_key, value):
-	if waiting_for_damage_source:
+	if tracking_key == Keys.item_doc_moth_hash:
+		match heal_source:
+			"HP_HEALED_REGEN":
+				run_stats["DOC_MOTH_REGEN"] += value
+			"HP_HEAL_LIFESTEAL":
+				run_stats["DOC_MOTH_LIFESTEAL"] += value
+			_:
+				pass
+	elif waiting_for_damage_source:
 		var string_key = Keys.hash_to_string[tracking_key]
 		if tracked_items.get(string_key, "") == "DAMAGE_DONE":
 			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string[tracking_key]
@@ -616,6 +618,8 @@ func init_run_stats()->Dictionary:
 		"HP_HEALED_FRUIT":0,
 		"HP_HEALED_REGEN":0,
 		"HP_HEALED_LIFESTEAL":0,
+		"DOC_MOTH_REGEN":0,
+		"DOC_MOTH_LIFESTEAL":0,
 		"MATERIALS_GAINED":0,
 		"MATERIALS_GAINED_PICKED_UP":0,
 		"MATERIALS_GAINED_HARVESTING":0,

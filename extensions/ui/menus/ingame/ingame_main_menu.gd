@@ -10,7 +10,7 @@ func _ready():
 	var button = load("res://mods-unpacked/meinfesl-AdvancedStatistics/ui/stats_button.tscn").instance()
 	mod_advstats_button = button
 	stats_label.add_child(button)
-
+	
 	var _error = button.connect("pressed", self, "mod_advstats_button_pressed")
 
 	var standalone_popup = load("res://ui/menus/ingame/item_panel_ui.tscn").instance()
@@ -28,6 +28,8 @@ func _ready():
 	$MarginContainer/VBoxContainer/HBoxContainer/HBoxContainer.add_child_below_node(mod_advstats_vbox, mod_advstats_menu)
 
 	_error = get_parent().get_parent().connect("paused", mod_advstats_menu, "build_statistics")
+	
+	$"%StatsContainer".set_focus_neighbours()
 
 
 func mod_advstats_button_pressed():

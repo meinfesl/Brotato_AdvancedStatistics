@@ -22,6 +22,7 @@ func _init():
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/ingame/pause_menu.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/ingame/upgrades_ui_player_container.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/shop/item_description.gd")
+	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/shop/stats_container.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/run/end_run.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "ui/menus/title_screen/title_screen.gd")
 	ModLoaderMod.install_script_extension(EXT_PATH + "weapons/weapon.gd")

@@ -29,8 +29,10 @@ margin_right = 1820.0
 margin_bottom = 1030.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
+custom_constants/margin_top = 10
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer"]
+margin_top = 10.0
 margin_right = 1820.0
 margin_bottom = 1030.0
 size_flags_horizontal = 3
@@ -580,7 +582,7 @@ rect_min_size = Vector2( 0, 10 )
 margin_left = 910.0
 margin_top = 648.0
 margin_right = 910.0
-margin_bottom = 961.0
+margin_bottom = 951.0
 size_flags_horizontal = 4
 size_flags_vertical = 3
 follow_focus = true
@@ -599,10 +601,11 @@ script = ExtResource( 3 )
 element_scene = ExtResource( 4 )
 
 [node name="ButtonBack" type="Button" parent="MarginContainer/VBoxContainer"]
+unique_name_in_owner = true
 margin_left = 610.0
-margin_top = 965.0
+margin_top = 955.0
 margin_right = 1210.0
-margin_bottom = 1030.0
+margin_bottom = 1020.0
 rect_min_size = Vector2( 600, 0 )
 size_flags_horizontal = 4
 size_flags_vertical = 4
@@ -612,6 +615,7 @@ script = ExtResource( 5 )
 [node name="ColorRect" type="ColorRect" parent="MarginContainer"]
 visible = false
 modulate = Color( 1, 1, 1, 0.686275 )
+margin_top = 10.0
 margin_right = 1820.0
 margin_bottom = 1030.0
 color = Color( 0, 0, 0, 1 )
@@ -619,6 +623,7 @@ color = Color( 0, 0, 0, 1 )
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer"]
 visible = false
 margin_left = 660.0
+margin_top = 10.0
 margin_right = 1160.0
 margin_bottom = 1030.0
 rect_min_size = Vector2( 500, 0 )
@@ -629,7 +634,7 @@ size_flags_vertical = 3
 margin_left = 5.0
 margin_top = 5.0
 margin_right = 495.0
-margin_bottom = 1025.0
+margin_bottom = 1015.0
 
 [node name="Label" type="Label" parent="MarginContainer/PanelContainer/VBoxContainer"]
 margin_right = 490.0
@@ -648,7 +653,7 @@ selected = 0
 [node name="ScrollContainer" type="ScrollContainer" parent="MarginContainer/PanelContainer/VBoxContainer"]
 margin_top = 118.0
 margin_right = 490.0
-margin_bottom = 951.0
+margin_bottom = 941.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 follow_focus = true
@@ -660,9 +665,9 @@ size_flags_horizontal = 3
 
 [node name="ButtonClose" type="Button" parent="MarginContainer/PanelContainer/VBoxContainer"]
 unique_name_in_owner = true
-margin_top = 955.0
+margin_top = 945.0
 margin_right = 490.0
-margin_bottom = 1020.0
+margin_bottom = 1010.0
 text = "MENU_BACK"
 
 [node name="ItemPopup" parent="." instance=ExtResource( 8 )]

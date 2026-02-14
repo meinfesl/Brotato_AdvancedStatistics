@@ -262,16 +262,19 @@ func build_survivability_stats():
 	var fruit = stats["HP_HEALED_FRUIT"]
 	var lifesteal = stats["HP_HEALED_LIFESTEAL"]
 	var regen = stats["HP_HEALED_REGEN"]
-	
+		
 	var items = 0
 	for key in tracked_items:
 		var heal = RunData.tracked_item_effects[0].get(Keys.generate_hash(key), 0)
 		if heal is Array:
-			for h in heal:
-				tracked_items[key] += h
-				items += h
-		tracked_items[key] = heal
-		items += heal
+			tracked_items[key] += heal[0]
+			items += heal[0]
+		else:
+			tracked_items[key] = heal
+			items += heal
+	
+	var doc_moth = tracked_items.get("item_doc_moth", 0)
+	items -= doc_moth
 	
 	var other = heal_total - fruit - lifesteal - regen - items
 	
@@ -279,8 +282,14 @@ func build_survivability_stats():
 	if heal_total:
 		add_row("      Fruit", make_pct(fruit, heal_total), other_color)
 		add_row("      Lifesteal", make_pct(lifesteal, heal_total), other_color)
+		var doc_moth_ls = stats.get("DOC_MOTH_LIFESTEAL", 0)
+		if doc_moth_ls > 0:
+			add_row_item(3, "item_doc_moth", doc_moth_ls, heal_total)
 		add_row("      HP Regeneration", make_pct(regen, heal_total), other_color)
-		
+		var doc_moth_regen = stats.get("DOC_MOTH_REGEN", 0)
+		if doc_moth_regen > 0:
+			add_row_item(3, "item_doc_moth", doc_moth_regen, heal_total)
+	
 	if items:
 		for key in tracked_items:
 			var heal = tracked_items[key]

@@ -76,6 +76,8 @@ func _input(event:InputEvent):
 		if $MarginContainer/PanelContainer.visible:
 			close_panel()
 			accept_event()
+		else:
+			$"%ButtonBack".emit_signal("pressed")
 
 
 func element_pressed(_element):

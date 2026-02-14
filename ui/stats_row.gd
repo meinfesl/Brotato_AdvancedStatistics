@@ -7,6 +7,7 @@ var popup_content = null
 var handle_popup = false
 
 func _ready():
+	$MarginContainer/HBoxContainer.set_focus_mode(Control.FOCUS_ALL)
 	var _error = $MarginContainer/HBoxContainer.connect("focus_entered", self, "on_focus_entered")
 	_error = $MarginContainer/HBoxContainer.connect("focus_exited",  self, "on_focus_exited")
 	_error = $MarginContainer/HBoxContainer.connect("mouse_entered", self, "on_mouse_entered")

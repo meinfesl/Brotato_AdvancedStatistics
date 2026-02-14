@@ -9,18 +9,18 @@ margin_bottom = 40.0
 script = ExtResource( 2 )
 
 [node name="Back" type="ColorRect" parent="."]
-margin_right = 157.0
+margin_right = 153.0
 margin_bottom = 40.0
 color = Color( 0.129412, 0.129412, 0.129412, 1 )
 
 [node name="ColorRect" type="ColorRect" parent="."]
 visible = false
-margin_right = 157.0
+margin_right = 153.0
 margin_bottom = 40.0
 color = Color( 0.6, 0.6, 0.6, 0.501961 )
 
 [node name="MarginContainer" type="MarginContainer" parent="."]
-margin_right = 157.0
+margin_right = 153.0
 margin_bottom = 40.0
 custom_constants/margin_top = 1
 custom_constants/margin_left = 5
@@ -28,36 +28,36 @@ custom_constants/margin_left = 5
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer"]
 margin_left = 5.0
 margin_top = 1.0
-margin_right = 157.0
+margin_right = 153.0
 margin_bottom = 40.0
 focus_mode = 2
 
 [node name="Name" type="Label" parent="MarginContainer/HBoxContainer"]
 margin_top = 7.0
-margin_right = 49.0
-margin_bottom = 31.0
+margin_right = 48.0
+margin_bottom = 32.0
 custom_fonts/font = ExtResource( 1 )
 text = "test"
 
 [node name="Control" type="Control" parent="MarginContainer/HBoxContainer"]
-margin_left = 53.0
-margin_right = 103.0
+margin_left = 52.0
+margin_right = 102.0
 margin_bottom = 39.0
 rect_min_size = Vector2( 50, 0 )
 size_flags_horizontal = 2
 
 [node name="Value" type="Label" parent="MarginContainer/HBoxContainer"]
-margin_left = 107.0
+margin_left = 106.0
 margin_top = 7.0
-margin_right = 142.0
-margin_bottom = 31.0
+margin_right = 139.0
+margin_bottom = 32.0
 custom_fonts/font = ExtResource( 1 )
 text = "100"
 
 [node name="Post" type="Label" parent="MarginContainer/HBoxContainer"]
-margin_left = 146.0
+margin_left = 143.0
 margin_top = 7.0
-margin_right = 152.0
-margin_bottom = 31.0
+margin_right = 148.0
+margin_bottom = 32.0
 custom_fonts/font = ExtResource( 1 )
 text = " "
