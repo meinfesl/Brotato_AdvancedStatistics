@@ -34,7 +34,6 @@ func _ready():
 	mod_advstats_menu.inventory_popup = $ItemPopup
 	mod_advstats_menu.standalone_popup = standalone_popup
 	
-	mod_advstats_menu.build_statistics()
 	mod_advstats_menu.hide()
 
 
@@ -43,6 +42,7 @@ func mod_advstats_button_pressed():
 		var x = mod_advstats_end_screen.rect_size.x
 		mod_advstats_end_screen.hide()
 		mod_advstats_menu.rect_min_size.x = x
+		mod_advstats_menu.build_statistics()
 		mod_advstats_menu.show()
 		mod_advstats_button.text = "-"
 	else:

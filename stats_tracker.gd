@@ -146,7 +146,7 @@ func on_game_unpaused():
 
 
 func on_enemy_spawned(enemy):
-	if enemy.is_loot:
+	if enemy.stats.always_drop_consumables and enemy.stats.can_drop_consumables and enemy.is_loot:
 		run_stats["SPAWNED_LOOT_ALIENS"] += 1
 
 func on_structure_spawned(structure):
@@ -275,8 +275,8 @@ func remove_all_weapons()->void:
 
 func on_enemy_killed(enemy):
 	run_stats["KILLS_ENEMIES"] += 1
-	if enemy.stats.always_drop_consumables:
-		if enemy.stats.value == 8:
+	if enemy.stats.always_drop_consumables and enemy.stats.can_drop_consumables:
+		if enemy.is_loot:
 			run_stats["KILLS_LOOT_ALIENS"] += 1
 		elif RunData.current_wave == RunData.nb_of_waves:
 			wave_stats["BOSSES_KILLED"] += 1

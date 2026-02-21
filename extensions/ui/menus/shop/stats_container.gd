@@ -7,8 +7,11 @@ func _ready():
 func set_focus_neighbours()->void :
 	.set_focus_neighbours()
 	
-	var child  = $"%StatsLabel".get_child(0)
+	var child_count = $"%StatsLabel".get_child_count()
+	if (child_count == 0):
+		return
 	
+	var child = $"%StatsLabel".get_child(0)
 	var advstats_toggle: Button = child as Button if child != null else null
 	if advstats_toggle:
 		_primary_tab.focus_neighbour_top = advstats_toggle.get_path()
