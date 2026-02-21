@@ -15,8 +15,8 @@ func take_damage(value: int, args: TakeDamageArgs)->Array:
 
 
 func die(args: = Utils.default_die_args)->void:
+	var was_alive = not dead;
 	.die(args)
 	
-	#p_cleaning_up is not viable on_group_spawn_timing_reached calls just die()
-	if current_stats.health == 0:
+	if not args.cleaning_up and was_alive:
 		RunData.mod_advstats.on_enemy_killed(self)
