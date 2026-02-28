@@ -80,9 +80,6 @@ var waiting_for_damage_source:bool = false
 var damage_source:String = ""
 var damage_tracking_key:int = Keys.empty_hash
 
-var builder_turret_damage:int = 0
-var lootworm_damage:int = 0
-
 var sturcure_spawn_counter:int = 0
 
 var run_lost:bool = false
@@ -120,8 +117,6 @@ func _process(_delta):
 
 func reset():
 	last_time = -1
-	builder_turret_damage = 0
-	lootworm_damage = 0
 	sturcure_spawn_counter = 0
 	run_lost = false
 	run_won = false
@@ -168,8 +163,12 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	
 	for builder_turret in Keys.item_builder_turret_n_hash:
 		if hitbox and hitbox.damage_tracking_key_hash == builder_turret:
-			builder_turret_damage += damage[1]
+			run_stats["DAMAGE_BUILDER_TURRET"] += damage[1]
 			break
+	
+	if hitbox and hitbox.from and is_instance_valid(hitbox.from):
+		if hitbox.from is Lootworm:
+			RunData.mod_advstats.run_stats["DAMAGE_LOOTWORM"] += damage[1]
 	
 	if run_stats["MAX_DAMAGE"] < damage[0]:
 		run_stats["MAX_DAMAGE"] = damage[0]
@@ -190,7 +189,7 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 		elif damage_source != "":
 			run_stats["MAX_DAMAGE_SOURCE"] = damage_source
 		elif damage_tracking_key != Keys.empty_hash:
-			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string(damage_tracking_key)
+			run_stats["MAX_DAMAGE_SOURCE"] = Keys.hash_to_string[damage_tracking_key]
 		else:
 			waiting_for_damage_source = true
 			run_stats["MAX_DAMAGE_SOURCE"] = ""
@@ -513,6 +512,7 @@ func load_tracked_items():
 	for item in ItemService.characters:
 		if item.tracking_text == "DAMAGE_DEALT":
 			tracked_items[item.my_id] = "DAMAGE_DONE"
+	tracked_items["character_chef"] = "DAMAGE_DONE"
 
 
 func save():
@@ -636,6 +636,8 @@ func init_run_stats()->Dictionary:
 		"SHOP_ITEMS_BOUGHT":0,
 		"SHOP_ITEMS_BROWSED":0,
 		"DAMAGE_SAUSAGE":0,
+		"DAMAGE_LOOTWORM":0,
+		"DAMAGE_BUILDER_TURRET":0,
 		"RUN_TIME":0,
 		"WEAPONS_USAGE":{},
 		"ITEMS_USAGE":{},

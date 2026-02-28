@@ -100,7 +100,7 @@ func build_damage_stats():
 	
 	var previous_weapons = weapon_damage
 	
-	var weapons = RunData.get_player_weapons(0)
+	var weapons = RunData.get_player_weapons_ref(0)
 	for i in weapons.size():
 		var weapon = weapons[i]
 		var damage = stats["DAMAGE_BY_WEAPON"][i]
@@ -154,9 +154,10 @@ func build_damage_stats():
 			tracked_items[key] = dmg
 			items += dmg
 	
-	if tracker.lootworm_damage > 0:
-		items += tracker.lootworm_damage
-		tracked_items["item_lootworm"] = tracker.lootworm_damage
+	var lootworm = stats["DAMAGE_LOOTWORM"]
+	if lootworm > 0:
+		items += lootworm
+		tracked_items["item_lootworm"] = lootworm
 	
 	if items:
 		add_row("      Items", make_pct(items, damage_done), other_color)
@@ -181,7 +182,7 @@ func build_damage_stats():
 			structures += dmg
 	
 	var builder_turret = null
-	var builder_turret_damage = tracker.builder_turret_damage
+	var builder_turret_damage = stats["DAMAGE_BUILDER_TURRET"]
 	for turret_hash in Keys.item_builder_turret_n_hash:
 		builder_turret = RunData.get_player_item(turret_hash, 0)
 		if builder_turret:
