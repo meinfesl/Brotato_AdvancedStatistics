@@ -274,11 +274,16 @@ func remove_all_weapons()->void:
 
 func on_enemy_killed(enemy):
 	run_stats["KILLS_ENEMIES"] += 1
-	if enemy.stats.always_drop_consumables and enemy.stats.can_drop_consumables:
+	var stats = enemy.stats
+	if stats.always_drop_consumables and stats.can_drop_consumables:
 		if enemy.is_loot:
 			run_stats["KILLS_LOOT_ALIENS"] += 1
 		elif RunData.current_wave == RunData.nb_of_waves:
-			wave_stats["BOSSES_KILLED"] += 1
+			# better way to determin a boss? they all are Boss class
+			if stats.health == 15000:
+				wave_stats["BOSSES_KILLED"] += 1
+			else:
+				run_stats["KILLS_ELITES"] += 1
 		else:
 			run_stats["KILLS_ELITES"] += 1
 
