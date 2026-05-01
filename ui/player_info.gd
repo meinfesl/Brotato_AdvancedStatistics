@@ -6,6 +6,7 @@ onready var mod_state = get_tree().get_root().get_node("ModLoader/meinfesl-Advan
 
 onready var tier_filter = $"%TierFilter"
 onready var button_close = $"%ButtonClose"
+onready var difficulty_select = $"%ButtonDifficultySelect"
 
 var stats = []
 var character_id
@@ -16,12 +17,12 @@ func _ready():
 	inventory.connect("element_focused", self, "element_focused")
 	inventory.connect("element_pressed", self, "element_pressed")
 	
-	var _error = $"%ButtonD5".connect("pressed", self, "filter_button_pressed")
-	_error = $"%ButtonNoEndless".connect("pressed", self, "filter_button_pressed")
+	var _error = $"%ButtonNoEndless".connect("pressed", self, "filter_button_pressed")
 	_error = $"%MostUsedWeapons"/Button.connect("pressed", self, "show_most_used_weapons")
 	_error = $"%MostUsedItems"/Button.connect("pressed", self, "show_most_used_items")
 	_error = button_close.connect("pressed", self, "close_panel")
 	_error = tier_filter.connect("item_selected", self, "item_filter_changed")
+	_error = difficulty_select.connect("item_selected", self, "difficulty_selected")
 	tier_filter.focus_neighbour_top = tier_filter.get_path()
 	tier_filter.focus_neighbour_left = tier_filter.get_path()
 	tier_filter.focus_neighbour_right = tier_filter.get_path()
@@ -33,7 +34,11 @@ func init():
 	inventory.add_special_element(potato, true)
 	inventory.set_elements(ItemService.characters, false, false)
 	
-	$"%ButtonD5".set_pressed_no_signal(mod_state.get("BUTTON_D5_ONLY", 0))
+	difficulty_select.add_item("All", 0)
+	for i in ProgressData.MAX_DIFFICULTY + 1:
+		difficulty_select.add_item("D" + str(ProgressData.MAX_DIFFICULTY - i), ProgressData.MAX_DIFFICULTY - i + 1)
+	difficulty_select.select(difficulty_select.get_item_index(mod_state["BUTTON_DIFFICULTY"]))
+	
 	$"%ButtonNoEndless".set_pressed_no_signal(mod_state.get("BUTTON_NO_ENDLESS", 0))
 	
 	inventory.get_child(0).grab_focus()
@@ -57,9 +62,14 @@ func element_focused(element:InventoryElement):
 	build_statistics_for_current_element()
 
 
+func difficulty_selected(index):
+	changed = true
+	mod_state["BUTTON_DIFFICULTY"] = difficulty_select.get_item_id(index)
+	build_statistics_for_current_element()
+
+
 func filter_button_pressed():
 	changed = true
-	mod_state["BUTTON_D5_ONLY"] = $"%ButtonD5".pressed
 	mod_state["BUTTON_NO_ENDLESS"] = $"%ButtonNoEndless".pressed
 	build_statistics_for_current_element()
 
@@ -89,18 +99,19 @@ func element_pressed(_element):
 
 func build_statistics_for_current_element():
 	stats.clear()
-	if $"%ButtonD5".pressed:
-		stats.push_back(RunData.mod_advstats.character_stats_normal[5])
-	else:
+	var diff_id = difficulty_select.get_selected_id()
+	if diff_id == 0:
 		for s in RunData.mod_advstats.character_stats_normal:
 			stats.push_back(s)
+	else:
+		stats.push_back(RunData.mod_advstats.character_stats_normal[diff_id - 1])
 	
 	if !$"%ButtonNoEndless".pressed:
-		if $"%ButtonD5".pressed:
-			stats.push_back(RunData.mod_advstats.character_stats_endless[5])
-		else:
+		if diff_id == 0:
 			for s in RunData.mod_advstats.character_stats_endless:
 				stats.push_back(s)
+		else:
+			stats.push_back(RunData.mod_advstats.character_stats_endless[diff_id - 1])
 	
 	build_statistics()
 

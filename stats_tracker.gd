@@ -551,9 +551,14 @@ func load():
 		var read_val = file.get_var(true)
 		if read_val:
 			mod_state = read_val.get("mod_state", init_mod_state())
+			var template = init_mod_state()
+			for key in template:
+				if !mod_state.has(key):
+					mod_state[key] = template[key]
+					
 			run_stats_saved = read_val.get("run_stats", null)
 			if run_stats_saved:
-				var template = init_run_stats()
+				template = init_run_stats()
 				for key in template:
 					if !run_stats_saved.has(key):
 						run_stats_saved[key] = template[key]
@@ -663,4 +668,5 @@ func init_mod_state()->Dictionary:
 	return {
 		"BUTTON_D5_ONLY":0,
 		"BUTTON_NO_ENDLESS":0,
+		"BUTTON_DIFFICULTY":0,
 	}

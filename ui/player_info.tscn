@@ -39,15 +39,15 @@ size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer"]
-margin_left = 657.0
-margin_right = 1163.0
+margin_left = 621.0
+margin_right = 1198.0
 margin_bottom = 630.0
 rect_min_size = Vector2( 0, 630 )
 size_flags_horizontal = 4
 size_flags_vertical = 3
 
 [node name="LeftColumn" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 630.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -55,12 +55,12 @@ custom_constants/margin_top = 5
 
 [node name="VBoxContainer" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn"]
 margin_top = 5.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 630.0
 size_flags_vertical = 3
 
 [node name="SelectedCharacter" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer"]
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 96.0
 
 [node name="IconPanel" type="Panel" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/SelectedCharacter"]
@@ -95,13 +95,13 @@ text = "CHARACTER_NAME"
 
 [node name="GenralInfo" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer"]
 margin_top = 100.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 551.0
 size_flags_vertical = 3
 
 [node name="TotalGames" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo"]
 unique_name_in_owner = true
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 25.0
 custom_fonts/font = ExtResource( 7 )
 text = "Total Games: 0"
@@ -109,7 +109,7 @@ text = "Total Games: 0"
 [node name="Wins" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo"]
 unique_name_in_owner = true
 margin_top = 29.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 54.0
 custom_fonts/font = ExtResource( 7 )
 text = "Wins: 0"
@@ -117,7 +117,7 @@ text = "Wins: 0"
 [node name="Losses" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo"]
 unique_name_in_owner = true
 margin_top = 58.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 83.0
 custom_fonts/font = ExtResource( 7 )
 text = "Losses: 0"
@@ -125,36 +125,36 @@ text = "Losses: 0"
 [node name="WinRate" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo"]
 unique_name_in_owner = true
 margin_top = 87.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 112.0
 custom_fonts/font = ExtResource( 7 )
 text = "Win Rate: 0%"
 
 [node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo"]
 margin_top = 116.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 380.0
 
 [node name="PanelContainer" type="PanelContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer"]
 self_modulate = Color( 0, 0, 0, 0.501961 )
-margin_right = 255.0
+margin_right = 272.0
 margin_bottom = 264.0
 size_flags_horizontal = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer"]
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 250.0
+margin_right = 267.0
 margin_bottom = 259.0
 
 [node name="MostUsedWeapons" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer"]
 unique_name_in_owner = true
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 254.0
 size_flags_horizontal = 3
 
 [node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 45.0
 custom_fonts/font = ExtResource( 7 )
 text = "Most Used Weapons"
@@ -165,7 +165,7 @@ script = ExtResource( 5 )
 [node name="WeaponTop1" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
 unique_name_in_owner = true
 margin_top = 49.0
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 81.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons/WeaponTop1"]
@@ -194,7 +194,7 @@ text = "SMG"
 [node name="WeaponTop2" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
 unique_name_in_owner = true
 margin_top = 85.0
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 117.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons/WeaponTop2"]
@@ -223,7 +223,7 @@ text = "SMG"
 [node name="WeaponTop3" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
 unique_name_in_owner = true
 margin_top = 121.0
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 153.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons/WeaponTop3"]
@@ -252,7 +252,7 @@ text = "SMG"
 [node name="WeaponTop4" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
 unique_name_in_owner = true
 margin_top = 157.0
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 189.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons/WeaponTop4"]
@@ -281,7 +281,7 @@ text = "SMG"
 [node name="WeaponTop5" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
 unique_name_in_owner = true
 margin_top = 193.0
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 225.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons/WeaponTop5"]
@@ -310,38 +310,38 @@ text = "SMG"
 [node name="WeaponsNA" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer/MarginContainer/MostUsedWeapons"]
 unique_name_in_owner = true
 margin_top = 229.0
-margin_right = 245.0
+margin_right = 262.0
 margin_bottom = 254.0
 custom_fonts/font = ExtResource( 7 )
 text = "N/A"
 
 [node name="Control" type="Control" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer"]
-margin_left = 259.0
-margin_right = 264.0
+margin_left = 276.0
+margin_right = 281.0
 margin_bottom = 264.0
 rect_min_size = Vector2( 5, 0 )
 
 [node name="PanelContainer2" type="PanelContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer"]
 self_modulate = Color( 0, 0, 0, 0.501961 )
-margin_left = 268.0
-margin_right = 487.0
+margin_left = 285.0
+margin_right = 558.0
 margin_bottom = 264.0
 size_flags_horizontal = 3
 
 [node name="MarginContainer" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2"]
 margin_left = 5.0
 margin_top = 5.0
-margin_right = 214.0
+margin_right = 268.0
 margin_bottom = 259.0
 
 [node name="MostUsedItems" type="VBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer"]
 unique_name_in_owner = true
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 254.0
 size_flags_horizontal = 3
 
 [node name="Button" type="Button" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 45.0
 custom_fonts/font = ExtResource( 7 )
 text = "Most Used Items"
@@ -352,7 +352,7 @@ script = ExtResource( 5 )
 [node name="ItemTop1" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
 unique_name_in_owner = true
 margin_top = 49.0
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 81.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems/ItemTop1"]
@@ -381,7 +381,7 @@ text = "Cake"
 [node name="ItemTop2" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
 unique_name_in_owner = true
 margin_top = 85.0
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 117.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems/ItemTop2"]
@@ -410,7 +410,7 @@ text = "Cake"
 [node name="ItemTop3" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
 unique_name_in_owner = true
 margin_top = 121.0
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 153.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems/ItemTop3"]
@@ -439,7 +439,7 @@ text = "Cake"
 [node name="ItemTop4" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
 unique_name_in_owner = true
 margin_top = 157.0
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 189.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems/ItemTop4"]
@@ -468,7 +468,7 @@ text = "Cake"
 [node name="ItemTop5" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
 unique_name_in_owner = true
 margin_top = 193.0
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 225.0
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems/ItemTop5"]
@@ -497,36 +497,46 @@ text = "Cake"
 [node name="ItemsNA" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/GenralInfo/HBoxContainer/PanelContainer2/MarginContainer/MostUsedItems"]
 unique_name_in_owner = true
 margin_top = 229.0
-margin_right = 209.0
+margin_right = 263.0
 margin_bottom = 254.0
 custom_fonts/font = ExtResource( 7 )
 text = "N/A"
 
 [node name="FilterButtons" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer"]
 margin_top = 555.0
-margin_right = 487.0
+margin_right = 558.0
 margin_bottom = 625.0
 
-[node name="ButtonD5" type="CheckButton" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/FilterButtons"]
-unique_name_in_owner = true
-margin_right = 205.0
+[node name="HBoxContainer" type="HBoxContainer" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/FilterButtons"]
+margin_right = 307.0
 margin_bottom = 70.0
-size_flags_vertical = 4
-custom_fonts/font = ExtResource( 7 )
-text = "D5 only"
+
+[node name="Label" type="Label" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/FilterButtons/HBoxContainer"]
+margin_top = 12.0
+margin_right = 192.0
+margin_bottom = 57.0
+text = "Difficulty:"
+
+[node name="ButtonDifficultySelect" type="OptionButton" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/FilterButtons/HBoxContainer"]
+unique_name_in_owner = true
+margin_left = 196.0
+margin_right = 307.0
+margin_bottom = 70.0
+rect_min_size = Vector2( 111, 0 )
+text = "All"
 
 [node name="ButtonNoEndless" type="CheckButton" parent="MarginContainer/VBoxContainer/HBoxContainer/LeftColumn/VBoxContainer/FilterButtons"]
 unique_name_in_owner = true
-margin_left = 209.0
-margin_right = 456.0
+margin_left = 311.0
+margin_right = 558.0
 margin_bottom = 70.0
 size_flags_vertical = 4
 custom_fonts/font = ExtResource( 7 )
 text = "No Endless"
 
 [node name="RightColumn" type="MarginContainer" parent="MarginContainer/VBoxContainer/HBoxContainer"]
-margin_left = 491.0
-margin_right = 506.0
+margin_left = 562.0
+margin_right = 577.0
 margin_bottom = 630.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
