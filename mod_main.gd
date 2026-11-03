@@ -31,7 +31,7 @@ func _init():
 
 
 func _ready():
-	var res = load("res://items/all/pocket_factory/pocket_factory_data.tres")
+	var res = load("res://items/all/00_base_game/pocket_factory/pocket_factory_data.tres")
 	res.tracking_text = "DAMAGE_DEALT"
 	
 	var loader = ModLoaderMod.new()
