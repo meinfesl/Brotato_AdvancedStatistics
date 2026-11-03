@@ -29,7 +29,7 @@ func _ready():
 
 
 func init():
-	var potato = load("res://items/all/potato/potato_icon.png")
+	var potato = load("res://items/all/00_base_game/potato/potato_icon.png")
 	inventory.clear_elements()
 	inventory.add_special_element(potato, true)
 	inventory.set_elements(ItemService.characters, false, false)
