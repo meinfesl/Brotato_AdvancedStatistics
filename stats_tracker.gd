@@ -47,7 +47,6 @@ class CharacterStats:
 			file.close()
 
 
-var owner_index = 0
 var tracked_items:Dictionary
 
 var wave_stats:Dictionary
@@ -110,27 +109,13 @@ func _process(_delta):
 	
 	waiting_for_damage_source = false
 	
-	if run_in_progress and owner_index < RunData.get_player_count():
+	if run_in_progress:
 		run_stats["RUN_TIME"] += diff
 		if wave_in_progress:
 			wave_stats["TIME"] += diff
 
 
 func reset():
-	run_in_progress = false
-	wave_in_progress = false
-	heal_source = ""
-	materials_source = ""
-	damage_source = ""
-	damage_tracking_key = Keys.empty_hash
-	combining_weapons = false
-	combining_weapons_damage = 0
-	combining_weapons_damage_burn = 0
-	exploding_weapon = null
-	levelup = false
-	burn = false
-	sausage = false
-	waiting_for_damage_source = false
 	last_time = -1
 	sturcure_spawn_counter = 0
 	run_lost = false
@@ -140,7 +125,6 @@ func reset():
 
 
 func on_wave_started():
-	if owner_index >= RunData.get_player_count(): return
 	if last_time == -1:
 		last_time = Time.get_ticks_msec()
 	run_in_progress = true
@@ -153,7 +137,6 @@ func on_game_paused():
 
 
 func on_game_unpaused():
-	if owner_index >= RunData.get_player_count(): return
 	run_in_progress = true
 
 
@@ -171,7 +154,7 @@ func on_structure_spawned(structure):
 		structure_name = structure_name.substr(1)
 			
 	if structure_name.begins_with("Turret"):
-		if sturcure_spawn_counter > RunData.get_player_effect(Keys.structures_hash, owner_index).size():
+		if sturcure_spawn_counter > RunData.get_player_effect(Keys.structures_hash, 0).size():
 			structure.mod_tooltiptracking_key = Keys.item_pocket_factory_hash
 
 func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
@@ -185,14 +168,14 @@ func on_enemy_damage_taken(damage:Array, hitbox:Hitbox):
 	
 	if hitbox and hitbox.from and is_instance_valid(hitbox.from):
 		if hitbox.from is Lootworm:
-			run_stats["DAMAGE_LOOTWORM"] += damage[1]
+			RunData.mod_advstats.run_stats["DAMAGE_LOOTWORM"] += damage[1]
 	
 	if run_stats["MAX_DAMAGE"] < damage[0]:
 		run_stats["MAX_DAMAGE"] = damage[0]
 		
 		if hitbox:
 			if hitbox.from:
-				var weapons = RunData.get_player_weapons(owner_index)
+				var weapons = RunData.get_player_weapons(0)
 				if is_instance_valid(hitbox.from) && "weapon_pos" in hitbox.from && hitbox.from.weapon_pos < weapons.size():
 					run_stats["MAX_DAMAGE_SOURCE"] = weapons[hitbox.from.weapon_pos].my_id
 				elif hitbox.damage_tracking_key_hash != Keys.empty_hash:
@@ -245,12 +228,12 @@ func on_weapon_damage(pos, damage):
 		
 	run_stats["DAMAGE_DONE_WEAPONS"] += damage
 	# Can happen on cleanup
-	if pos >= 0 and pos < run_stats["DAMAGE_BY_WEAPON"].size():
+	if pos < run_stats["DAMAGE_BY_WEAPON"].size():
 		run_stats["DAMAGE_BY_WEAPON"][pos] += damage
 		if burn:
 			run_stats["DAMAGE_BY_WEAPON_BURN"][pos] += damage
 		if waiting_for_damage_source:
-			run_stats["MAX_DAMAGE_SOURCE"] = RunData.get_player_weapons(owner_index)[pos].my_id
+			run_stats["MAX_DAMAGE_SOURCE"] = RunData.get_player_weapons(0)[pos].my_id
 			waiting_for_damage_source = false
 
 
@@ -273,17 +256,20 @@ func on_weapon_added(weapon):
 
 
 func on_weapon_removed(weapon):
-	var weapons = RunData.get_player_weapons(owner_index)
+	var weapons = RunData.get_player_weapons(0)
 	for i in weapons.size():
 		var current_weapon = weapons[i]
-		if ItemService.is_same_weapon(current_weapon, weapon):
-			on_weapon_index_removed(i)
+		if current_weapon.my_id == weapon.my_id:
+			if combining_weapons:
+				combining_weapons_damage += run_stats["DAMAGE_BY_WEAPON"][i]
+				combining_weapons_damage_burn += run_stats["DAMAGE_BY_WEAPON_BURN"][i]
+			run_stats["DAMAGE_BY_WEAPON"].remove(i)
+			run_stats["DAMAGE_BY_WEAPON_BURN"].remove(i)
 			break
 
 
 func remove_all_weapons()->void:
 	run_stats["DAMAGE_BY_WEAPON"].clear()
-	run_stats["DAMAGE_BY_WEAPON_BURN"].clear()
 
 
 func on_enemy_killed(enemy):
@@ -330,17 +316,12 @@ func on_materials_spent(value):
 		run_stats[materials_source] += value
 
 
-func on_materials_gained_from_weapon_crit(value: int = 1):
-	run_stats["MATERIALS_GAINED_WEAPON_CRIT"] += value
+func on_materials_gained_from_weapon_crit():
+	run_stats["MATERIALS_GAINED_WEAPON_CRIT"] += 1
 
 
 func on_gold_converted(total_bonus_gold, _nb_materials_per_conversion, _nb_stats_added_per_conversion):
-	if owner_index >= RunData.get_player_count(): return
-	var effects = RunData.get_player_effect(Keys.convert_bonus_gold_hash,owner_index)
-	run_stats["MATERIALS_CONVERTED"] = 0
-	if not effects.empty() and effects[0].value > 0:
-		var share = float(total_bonus_gold)/RunData.get_player_count()
-		run_stats["MATERIALS_CONVERTED"] = int(floor(share/effects[0].value)*effects[0].value)
+	run_stats["MATERIALS_CONVERTED"] = total_bonus_gold;
 
 
 func on_shop_items_updated(item_count:int):
@@ -378,11 +359,11 @@ func get_percent_text_for_item(item)->String:
 	if !tracked_items.has(item.my_id):
 		return ""
 		
-	if !RunData.tracked_item_effects[owner_index].has(item.get_my_id_hash()):
+	if !RunData.tracked_item_effects[0].has(item.get_my_id_hash()):
 		return ""
 		
 	var total = run_stats[tracked_items[item.my_id]]
-	var value = RunData.tracked_item_effects[owner_index][item.get_my_id_hash()]
+	var value = RunData.tracked_item_effects[0][item.get_my_id_hash()]
 	# Temp fix for two values in tooltip
 	if value is Array:
 		return ""
@@ -393,8 +374,7 @@ func get_percent_text_for_item(item)->String:
 
 
 func on_wave_end():
-	if owner_index >= RunData.get_player_count(): return
-	var char_id = RunData.get_player_character(owner_index).my_id
+	var char_id = RunData.get_player_character(0).my_id
 	var stats
 	if RunData.is_endless_run:
 		stats = character_stats_endless[RunData.current_difficulty]
@@ -421,13 +401,12 @@ func on_wave_end():
 				stats.update_value(char_id, "WAVE20_TIME", wave_stats["TIME"])
 		
 		#Save finished runs
-		var path = _save_dir() + "/character_data"
+		var path = "user://" + Platform.get_user_id() + "/mod_advstats/character_data"
 		stats.save(path)
 		stats.save(path)
 
 
 func on_room_clean_up(is_run_lost:bool, is_run_won:bool):
-	if owner_index >= RunData.get_player_count(): return
 	wave_in_progress = false
 	run_lost = is_run_lost
 	run_won = is_run_won
@@ -445,7 +424,7 @@ func add_tracked_value(tracking_key, value):
 		match heal_source:
 			"HP_HEALED_REGEN":
 				run_stats["DOC_MOTH_REGEN"] += value
-			"HP_HEALED_LIFESTEAL":
+			"HP_HEAL_LIFESTEAL":
 				run_stats["DOC_MOTH_LIFESTEAL"] += value
 			_:
 				pass
@@ -478,15 +457,15 @@ func update_character_stats(char_id, stats:CharacterStats):
 	
 	for stat in char_stats:
 		var hash_stat = Keys.generate_hash(stat)
-		if stats.get_value(char_id, stat.to_upper(), 0) < Utils.get_stat(hash_stat, owner_index):
-			stats.update_value(char_id, stat.to_upper(), Utils.get_stat(hash_stat, owner_index))
+		if stats.get_value(char_id, stat.to_upper(), 0) < Utils.get_stat(hash_stat, 0):
+			stats.update_value(char_id, stat.to_upper(), Utils.get_stat(hash_stat, 0))
 	
-	if stats.get_value(char_id, "LEVEL", 0) < RunData.get_player_level(owner_index):
-		stats.update_value(char_id, "LEVEL", RunData.get_player_level(owner_index))
+	if stats.get_value(char_id, "LEVEL", 0) < RunData.get_player_level(0):
+		stats.update_value(char_id, "LEVEL", RunData.get_player_level(0))
 
 
 func update_stats(stats:CharacterStats):
-	var char_id = RunData.get_player_character(owner_index).my_id
+	var char_id = RunData.get_player_character(0).my_id
 	
 	if !stats.characters.has(char_id):
 		stats.characters[char_id] = init_character_stats()
@@ -498,7 +477,7 @@ func update_stats(stats:CharacterStats):
 			stats.update_value(char_id, "MAX_DAMAGE", run_stats["MAX_DAMAGE"])
 			stats.update_value(char_id, "MAX_DAMAGE_SOURCE", run_stats["MAX_DAMAGE_SOURCE"])
 		
-		var items = RunData.get_player_items(owner_index)
+		var items = RunData.get_player_items(0)
 		if stats.get_value(char_id, "ITEMS_OWNED", 0) < items.size() -1:
 			stats.update_value(char_id, "ITEMS_OWNED", items.size() - 1)
 		
@@ -542,7 +521,7 @@ func load_tracked_items():
 
 
 func save():
-	var path = _save_dir()
+	var path = "user://" + Platform.get_user_id() + "/mod_advstats"
 	
 	var d = Directory.new()
 	if !d.dir_exists(path):
@@ -562,9 +541,7 @@ func save():
 
 
 func load():
-	# A missing slot save must not restore a ledger from an earlier loaded run.
-	run_stats_saved = null
-	var mod_dir = _save_dir()
+	var mod_dir = "user://" + Platform.get_user_id() + "/mod_advstats"
 	var path = mod_dir + "/save"
 	
 	var file = File.new()
@@ -607,7 +584,7 @@ func validate(stats:CharacterStats):
 
 
 func save_run_state():
-	run_stats_saved = run_stats.duplicate(true)
+	run_stats_saved = run_stats
 
 
 func reset_run_state():
@@ -616,11 +593,7 @@ func reset_run_state():
 
 func resum_from_state():
 	if run_stats_saved != null:
-		run_stats = run_stats_saved.duplicate(true)
-	elif owner_index < RunData.get_player_count():
-		# Older mod saves contain no ledger for players 2-4; start these at zero.
-		run_stats = init_run_stats()
-		for weapon in RunData.get_player_weapons(owner_index): on_weapon_added(weapon)
+		run_stats = run_stats_saved
 
 
 func init_wave_stats()->Dictionary:
@@ -697,15 +670,3 @@ func init_mod_state()->Dictionary:
 		"BUTTON_NO_ENDLESS":0,
 		"BUTTON_DIFFICULTY":0,
 	}
-
-func _save_dir() -> String:
-	var base = ProgressData.SAVE_DIR + "/mod_advstats"
-	return base if owner_index == 0 else base + "/player_"+str(owner_index+1)
-
-func on_weapon_index_removed(index: int):
-	if index < 0 or index >= run_stats["DAMAGE_BY_WEAPON"].size(): return
-	if combining_weapons:
-		combining_weapons_damage += run_stats["DAMAGE_BY_WEAPON"][index]
-		combining_weapons_damage_burn += run_stats["DAMAGE_BY_WEAPON_BURN"][index]
-	run_stats["DAMAGE_BY_WEAPON"].remove(index)
-	run_stats["DAMAGE_BY_WEAPON_BURN"].remove(index)

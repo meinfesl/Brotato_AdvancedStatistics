@@ -1,7 +1,6 @@
 class_name StatsRow
 extends MarginContainer
 
-var player_index = 0
 var inventory_popup = null
 var standalone_popup = null
 var popup_content = null
@@ -48,7 +47,7 @@ func show_popup():
 	if inventory_popup:
 		inventory_popup.display_item_data(popup_content.item, self, true)
 	elif standalone_popup:
-		standalone_popup.set_data(popup_content, player_index)
+		standalone_popup.set_data(popup_content, 0)
 		standalone_popup.show()
 	
 	handle_popup = true
