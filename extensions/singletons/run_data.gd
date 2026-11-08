@@ -59,6 +59,12 @@ func add_tracked_value(player_index: int, tracking_key: int, value: float, index
 	mod_advstats.add_tracked_value(tracking_key, value)
 	
 
+func meca_upgrade_weapon(weapon_data: WeaponData, upgraded_weapon: WeaponData, player_index: int)->WeaponData:
+	mod_advstats.combining_weapons = true
+	var ret = .meca_upgrade_weapon(weapon_data, upgraded_weapon, player_index)
+	mod_advstats.combining_weapons = false
+	return ret
+
 # Why here? because it's in _ready of main.gd
 func reset_cache()->void:
 	.reset_cache()
