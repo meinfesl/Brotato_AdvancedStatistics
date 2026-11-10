@@ -129,6 +129,7 @@ func on_wave_started():
 		last_time = Time.get_ticks_msec()
 	run_in_progress = true
 	wave_in_progress = true
+	sturcure_spawn_counter = 0
 	wave_stats = init_wave_stats()
 
 
